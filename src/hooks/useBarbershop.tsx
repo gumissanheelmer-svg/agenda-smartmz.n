@@ -24,6 +24,10 @@ export interface Barbershop {
   prep_buffer_minutes: number;
   cleanup_buffer_minutes: number;
   slot_interval_minutes: number;
+  address: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  cover_image_url: string | null;
 }
 
 interface BarbershopContextType {
@@ -92,6 +96,10 @@ export function BarbershopProvider({ children }: { children: ReactNode }) {
         prep_buffer_minutes: barbershopData.prep_buffer_minutes ?? 0,
         cleanup_buffer_minutes: barbershopData.cleanup_buffer_minutes ?? 0,
         slot_interval_minutes: barbershopData.slot_interval_minutes ?? 30,
+        address: barbershopData.address || null,
+        latitude: barbershopData.latitude || null,
+        longitude: barbershopData.longitude || null,
+        cover_image_url: barbershopData.cover_image_url || null,
       } as Barbershop);
       setIsLoading(false);
       return true;

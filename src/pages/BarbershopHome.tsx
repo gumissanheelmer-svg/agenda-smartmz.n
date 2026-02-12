@@ -76,6 +76,11 @@ export default function BarbershopHome() {
           logoUrl={barbershop.logo_url}
           backgroundImageUrl={barbershop.background_image_url}
           backgroundOverlayLevel={barbershop.background_overlay_level}
+          address={barbershop.address}
+          latitude={barbershop.latitude}
+          longitude={barbershop.longitude}
+          coverImageUrl={barbershop.cover_image_url}
+          primaryColor={barbershop.primary_color}
         />
       )}
     </>
