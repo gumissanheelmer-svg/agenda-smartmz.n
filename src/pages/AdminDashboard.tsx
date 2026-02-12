@@ -3,6 +3,7 @@ import { useNavigate, Outlet, NavLink } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminBarbershop } from '@/hooks/useAdminBarbershop';
 import { Logo } from '@/components/Logo';
+import { SmartSummary } from '@/components/admin/SmartSummary';
 import { Button } from '@/components/ui/button';
 import { 
   Calendar, 
@@ -188,6 +189,7 @@ export default function AdminDashboard() {
           "flex-1 p-4 md:p-8",
           isMobile ? "pt-20" : "ml-64"
         )}>
+          <SmartSummary />
           <Outlet />
         </main>
       </div>
