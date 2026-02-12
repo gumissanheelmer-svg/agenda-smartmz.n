@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/Logo';
 import { Scissors, Clock, MapPin, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 interface LandingPageProps {
   onBookNow: () => void;
@@ -11,131 +12,164 @@ interface LandingPageProps {
   backgroundOverlayLevel?: 'low' | 'medium' | 'high';
 }
 
-export function LandingPage({ 
-  onBookNow, 
-  barbershopName, 
+const floatAnimation = {
+  y: [0, -6, 0],
+  transition: {
+    duration: 6,
+    repeat: Infinity,
+    ease: 'easeInOut' as const,
+  },
+};
+
+const featureCards = [
+  { icon: Clock, title: 'Agendamento Rápido', desc: 'Em poucos cliques' },
+  { icon: Star, title: 'Profissionais Top', desc: 'Equipa experiente' },
+  { icon: MapPin, title: 'Localização Central', desc: 'Fácil acesso' },
+];
+
+export function LandingPage({
+  onBookNow,
+  barbershopName,
   logoUrl,
   backgroundImageUrl,
-  backgroundOverlayLevel = 'medium'
 }: LandingPageProps) {
   const displayName = barbershopName || 'Barbearia Elite';
-  
-  const overlayOpacity = {
-    low: 'bg-black/30',
-    medium: 'bg-black/50',
-    high: 'bg-black/70',
-  }[backgroundOverlayLevel];
 
   return (
-    <div className="min-h-screen bg-background overflow-hidden relative">
+    <div className="min-h-screen relative overflow-hidden bg-black">
       {/* Background Image */}
       {backgroundImageUrl && (
-        <>
-          <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${backgroundImageUrl})` }}
-          />
-          <div className={`absolute inset-0 ${overlayOpacity}`} />
-        </>
-      )}
-      
-      {/* Background decorations - only show if no background image */}
-      {!backgroundImageUrl && (
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl" />
-        </div>
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105"
+          style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+        />
       )}
 
+      {/* Premium Gradient Overlay – works on any image */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(to bottom, rgba(0,0,0,0.75), rgba(0,0,0,0.55), rgba(0,0,0,0.80))',
+        }}
+      />
+
       {/* Header */}
-      <header className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
+      <header className="relative z-20 flex items-center justify-between px-6 py-5 max-w-[1200px] mx-auto">
         {logoUrl ? (
           <img src={logoUrl} alt={displayName} className="h-10 w-auto object-contain" />
         ) : (
           <Logo size="sm" />
         )}
         <Link to="/login">
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-white/70 hover:text-white hover:bg-white/10 transition-colors duration-300"
+          >
             Entrar
           </Button>
         </Link>
       </header>
 
-      {/* Hero Section */}
+      {/* Hero Content */}
       <main className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-6 text-center">
-        <div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
-          {logoUrl ? (
-            <img src={logoUrl} alt={displayName} className="h-24 w-auto object-contain mx-auto" />
-          ) : (
-            <Logo size="lg" showText={false} />
+        <div className="max-w-[1200px] mx-auto w-full py-20 md:py-28">
+          {/* Logo mark */}
+          {logoUrl && (
+            <motion.img
+              src={logoUrl}
+              alt={displayName}
+              className="h-20 w-auto object-contain mx-auto mb-8"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+            />
           )}
-        </div>
 
-        <h1 
-          className="mt-8 text-5xl md:text-7xl font-display font-bold text-foreground animate-slide-up"
-          style={{ animationDelay: '0.2s' }}
-        >
-          {displayName.includes(' ') ? (
-            <>
-              {displayName.split(' ').slice(0, -1).join(' ')}{' '}
-              <span className="text-primary">{displayName.split(' ').slice(-1)}</span>
-            </>
-          ) : (
-            <span className="text-primary">{displayName}</span>
-          )}
-        </h1>
+          {/* Title */}
+          <motion.h1
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-extrabold text-white tracking-tight leading-[1.05]"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+          >
+            {displayName}
+          </motion.h1>
 
-        <p 
-          className="mt-4 text-lg md:text-xl text-muted-foreground max-w-md animate-slide-up"
-          style={{ animationDelay: '0.3s' }}
-        >
-          Estilo e precisão em cada corte. Agende seu horário agora.
-        </p>
+          {/* Subtitle */}
+          <motion.p
+            className="mt-5 text-lg md:text-xl text-white/85 font-medium max-w-lg mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.25 }}
+          >
+            Estilo e precisão em cada corte. Agende seu horário agora.
+          </motion.p>
 
-        <Button 
-          variant="hero" 
-          size="xl"
-          className="mt-10 animate-slide-up"
-          style={{ animationDelay: '0.4s' }}
-          onClick={onBookNow}
-        >
-          <Scissors className="w-5 h-5 mr-2" />
-          Agendar Agora
-        </Button>
+          {/* Microcopy */}
+          <motion.p
+            className="mt-2 text-sm text-white/60"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            Agende seu horário em segundos.
+          </motion.p>
 
-        {/* Features */}
-        <div 
-          className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl animate-slide-up"
-          style={{ animationDelay: '0.5s' }}
-        >
-          <div className="flex flex-col items-center p-6 rounded-xl bg-card/50 border border-border/50 backdrop-blur">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-              <Clock className="w-6 h-6 text-primary" />
-            </div>
-            <h3 className="font-semibold text-foreground">Agendamento Rápido</h3>
-            <p className="text-sm text-muted-foreground mt-1">Em poucos cliques</p>
-          </div>
+          {/* CTA Button */}
+          <motion.div
+            className="mt-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.45 }}
+          >
+            <button
+              onClick={onBookNow}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-base
+                text-[#111] shadow-lg
+                transition-all duration-300 ease-out
+                hover:scale-[1.04] hover:shadow-[0_0_30px_rgba(250,204,21,0.35)]
+                active:scale-[0.98]"
+              style={{
+                background: 'linear-gradient(135deg, #FACC15, #FDBA74)',
+              }}
+            >
+              <Scissors className="w-5 h-5" />
+              Agendar Agora
+            </button>
+          </motion.div>
 
-          <div className="flex flex-col items-center p-6 rounded-xl bg-card/50 border border-border/50 backdrop-blur">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-              <Star className="w-6 h-6 text-primary" />
-            </div>
-            <h3 className="font-semibold text-foreground">Profissionais Top</h3>
-            <p className="text-sm text-muted-foreground mt-1">Equipa experiente</p>
-          </div>
-
-          <div className="flex flex-col items-center p-6 rounded-xl bg-card/50 border border-border/50 backdrop-blur">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-              <MapPin className="w-6 h-6 text-primary" />
-            </div>
-            <h3 className="font-semibold text-foreground">Localização Central</h3>
-            <p className="text-sm text-muted-foreground mt-1">Fácil acesso</p>
+          {/* Feature Cards */}
+          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-5 max-w-3xl mx-auto">
+            {featureCards.map((card, i) => (
+              <motion.div
+                key={card.title}
+                className="flex flex-col items-center p-7 rounded-[20px] border border-white/10 shadow-lg"
+                style={{
+                  background: 'rgba(255,255,255,0.08)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                }}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.55 + i * 0.12 }}
+                whileInView={floatAnimation}
+                viewport={{ once: false }}
+              >
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4 bg-white/10">
+                  <card.icon className="w-6 h-6 text-white/90" />
+                </div>
+                <h3 className="font-semibold text-white text-base">{card.title}</h3>
+                <p className="text-sm text-white/60 mt-1">{card.desc}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 py-8 text-center text-sm text-muted-foreground">
+      <footer className="relative z-10 py-8 text-center text-sm text-white/40">
         <p>© {new Date().getFullYear()} {displayName}. Todos os direitos reservados.</p>
       </footer>
     </div>
