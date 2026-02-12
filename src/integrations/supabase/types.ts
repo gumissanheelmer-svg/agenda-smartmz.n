@@ -302,17 +302,21 @@ export type Database = {
           background_image_url: string | null
           background_overlay_level: string | null
           business_type: string
+          city: string | null
           cleanup_buffer_minutes: number
           closing_time: string | null
           cover_image_url: string | null
           created_at: string
           emola_number: string | null
+          gallery_images: string[] | null
           id: string
           latitude: number | null
+          location_name: string | null
           logo_url: string | null
           longitude: number | null
           mpesa_number: string | null
           name: string
+          neighborhood: string | null
           opening_time: string | null
           owner_email: string | null
           payment_methods_enabled: string[] | null
@@ -324,6 +328,7 @@ export type Database = {
           slug: string
           text_color: string
           updated_at: string
+          video_url: string | null
           whatsapp_number: string | null
         }
         Insert: {
@@ -334,17 +339,21 @@ export type Database = {
           background_image_url?: string | null
           background_overlay_level?: string | null
           business_type?: string
+          city?: string | null
           cleanup_buffer_minutes?: number
           closing_time?: string | null
           cover_image_url?: string | null
           created_at?: string
           emola_number?: string | null
+          gallery_images?: string[] | null
           id?: string
           latitude?: number | null
+          location_name?: string | null
           logo_url?: string | null
           longitude?: number | null
           mpesa_number?: string | null
           name: string
+          neighborhood?: string | null
           opening_time?: string | null
           owner_email?: string | null
           payment_methods_enabled?: string[] | null
@@ -356,6 +365,7 @@ export type Database = {
           slug: string
           text_color?: string
           updated_at?: string
+          video_url?: string | null
           whatsapp_number?: string | null
         }
         Update: {
@@ -366,17 +376,21 @@ export type Database = {
           background_image_url?: string | null
           background_overlay_level?: string | null
           business_type?: string
+          city?: string | null
           cleanup_buffer_minutes?: number
           closing_time?: string | null
           cover_image_url?: string | null
           created_at?: string
           emola_number?: string | null
+          gallery_images?: string[] | null
           id?: string
           latitude?: number | null
+          location_name?: string | null
           logo_url?: string | null
           longitude?: number | null
           mpesa_number?: string | null
           name?: string
+          neighborhood?: string | null
           opening_time?: string | null
           owner_email?: string | null
           payment_methods_enabled?: string[] | null
@@ -388,6 +402,7 @@ export type Database = {
           slug?: string
           text_color?: string
           updated_at?: string
+          video_url?: string | null
           whatsapp_number?: string | null
         }
         Relationships: []
@@ -984,16 +999,20 @@ export type Database = {
           background_image_url: string
           background_overlay_level: string
           business_type: string
+          city: string
           cleanup_buffer_minutes: number
           closing_time: string
           cover_image_url: string
           emola_number: string
+          gallery_images: string[]
           id: string
           latitude: number
+          location_name: string
           logo_url: string
           longitude: number
           mpesa_number: string
           name: string
+          neighborhood: string
           opening_time: string
           payment_methods_enabled: string[]
           payment_required: boolean
@@ -1003,6 +1022,7 @@ export type Database = {
           slot_interval_minutes: number
           slug: string
           text_color: string
+          video_url: string
           whatsapp_number: string
         }[]
       }
