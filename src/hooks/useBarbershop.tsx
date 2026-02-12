@@ -28,6 +28,11 @@ export interface Barbershop {
   latitude: number | null;
   longitude: number | null;
   cover_image_url: string | null;
+  city: string | null;
+  neighborhood: string | null;
+  location_name: string | null;
+  gallery_images: string[];
+  video_url: string | null;
 }
 
 interface BarbershopContextType {
@@ -84,7 +89,7 @@ export function BarbershopProvider({ children }: { children: ReactNode }) {
       
       setBarbershop({
         ...barbershopData,
-        active: true, // We only get active barbershops
+        active: true,
         business_type: barbershopData.business_type || 'barbearia',
         background_image_url: barbershopData.background_image_url || null,
         background_overlay_level: barbershopData.background_overlay_level || 'medium',
@@ -100,6 +105,11 @@ export function BarbershopProvider({ children }: { children: ReactNode }) {
         latitude: barbershopData.latitude || null,
         longitude: barbershopData.longitude || null,
         cover_image_url: barbershopData.cover_image_url || null,
+        city: barbershopData.city || null,
+        neighborhood: barbershopData.neighborhood || null,
+        location_name: barbershopData.location_name || null,
+        gallery_images: barbershopData.gallery_images || [],
+        video_url: barbershopData.video_url || null,
       } as Barbershop);
       setIsLoading(false);
       return true;
