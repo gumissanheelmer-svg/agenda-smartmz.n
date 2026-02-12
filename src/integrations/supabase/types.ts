@@ -979,15 +979,19 @@ export type Database = {
       get_public_barbershop: {
         Args: { p_slug: string }
         Returns: {
+          address: string
           background_color: string
           background_image_url: string
           background_overlay_level: string
           business_type: string
           cleanup_buffer_minutes: number
           closing_time: string
+          cover_image_url: string
           emola_number: string
           id: string
+          latitude: number
           logo_url: string
+          longitude: number
           mpesa_number: string
           name: string
           opening_time: string

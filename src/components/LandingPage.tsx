@@ -3,6 +3,7 @@ import { Logo } from '@/components/Logo';
 import { Scissors, Clock, MapPin, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { LocationSection } from '@/components/LocationSection';
 
 interface LandingPageProps {
   onBookNow: () => void;
@@ -10,6 +11,11 @@ interface LandingPageProps {
   logoUrl?: string | null;
   backgroundImageUrl?: string | null;
   backgroundOverlayLevel?: 'low' | 'medium' | 'high';
+  address?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  coverImageUrl?: string | null;
+  primaryColor?: string;
 }
 
 const floatAnimation = {
@@ -32,6 +38,11 @@ export function LandingPage({
   barbershopName,
   logoUrl,
   backgroundImageUrl,
+  address,
+  latitude,
+  longitude,
+  coverImageUrl,
+  primaryColor,
 }: LandingPageProps) {
   const displayName = barbershopName || 'Barbearia Elite';
 
@@ -168,8 +179,19 @@ export function LandingPage({
         </div>
       </main>
 
+      {/* Location Section */}
+      <LocationSection
+        name={displayName}
+        address={address}
+        latitude={latitude}
+        longitude={longitude}
+        coverImageUrl={coverImageUrl}
+        primaryColor={primaryColor}
+        onBookNow={onBookNow}
+      />
+
       {/* Footer */}
-      <footer className="relative z-10 py-8 text-center text-sm text-white/40">
+      <footer className="relative z-10 py-8 text-center text-sm text-white/40" style={{ background: '#14141C' }}>
         <p>© {new Date().getFullYear()} {displayName}. Todos os direitos reservados.</p>
       </footer>
     </div>
