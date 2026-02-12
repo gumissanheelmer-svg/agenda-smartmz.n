@@ -296,6 +296,7 @@ export type Database = {
       barbershops: {
         Row: {
           active: boolean
+          address: string | null
           approval_status: string
           background_color: string
           background_image_url: string | null
@@ -303,10 +304,13 @@ export type Database = {
           business_type: string
           cleanup_buffer_minutes: number
           closing_time: string | null
+          cover_image_url: string | null
           created_at: string
           emola_number: string | null
           id: string
+          latitude: number | null
           logo_url: string | null
+          longitude: number | null
           mpesa_number: string | null
           name: string
           opening_time: string | null
@@ -324,6 +328,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          address?: string | null
           approval_status?: string
           background_color?: string
           background_image_url?: string | null
@@ -331,10 +336,13 @@ export type Database = {
           business_type?: string
           cleanup_buffer_minutes?: number
           closing_time?: string | null
+          cover_image_url?: string | null
           created_at?: string
           emola_number?: string | null
           id?: string
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
           mpesa_number?: string | null
           name: string
           opening_time?: string | null
@@ -352,6 +360,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          address?: string | null
           approval_status?: string
           background_color?: string
           background_image_url?: string | null
@@ -359,10 +368,13 @@ export type Database = {
           business_type?: string
           cleanup_buffer_minutes?: number
           closing_time?: string | null
+          cover_image_url?: string | null
           created_at?: string
           emola_number?: string | null
           id?: string
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
           mpesa_number?: string | null
           name?: string
           opening_time?: string | null
