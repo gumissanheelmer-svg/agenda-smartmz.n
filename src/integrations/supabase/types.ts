@@ -309,11 +309,15 @@ export type Database = {
           created_at: string
           emola_number: string | null
           gallery_images: string[] | null
+          gallery_videos: string[] | null
           id: string
           latitude: number | null
           location_name: string | null
           logo_url: string | null
           longitude: number | null
+          maps_raw_link: string | null
+          media_featured_type: string | null
+          media_featured_url: string | null
           mpesa_number: string | null
           name: string
           neighborhood: string | null
@@ -346,11 +350,15 @@ export type Database = {
           created_at?: string
           emola_number?: string | null
           gallery_images?: string[] | null
+          gallery_videos?: string[] | null
           id?: string
           latitude?: number | null
           location_name?: string | null
           logo_url?: string | null
           longitude?: number | null
+          maps_raw_link?: string | null
+          media_featured_type?: string | null
+          media_featured_url?: string | null
           mpesa_number?: string | null
           name: string
           neighborhood?: string | null
@@ -383,11 +391,15 @@ export type Database = {
           created_at?: string
           emola_number?: string | null
           gallery_images?: string[] | null
+          gallery_videos?: string[] | null
           id?: string
           latitude?: number | null
           location_name?: string | null
           logo_url?: string | null
           longitude?: number | null
+          maps_raw_link?: string | null
+          media_featured_type?: string | null
+          media_featured_url?: string | null
           mpesa_number?: string | null
           name?: string
           neighborhood?: string | null
@@ -1005,11 +1017,15 @@ export type Database = {
           cover_image_url: string
           emola_number: string
           gallery_images: string[]
+          gallery_videos: string[]
           id: string
           latitude: number
           location_name: string
           logo_url: string
           longitude: number
+          maps_raw_link: string
+          media_featured_type: string
+          media_featured_url: string
           mpesa_number: string
           name: string
           neighborhood: string

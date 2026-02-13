@@ -33,6 +33,10 @@ export interface Barbershop {
   location_name: string | null;
   gallery_images: string[];
   video_url: string | null;
+  maps_raw_link: string | null;
+  gallery_videos: string[];
+  media_featured_url: string | null;
+  media_featured_type: string | null;
 }
 
 interface BarbershopContextType {
@@ -110,6 +114,10 @@ export function BarbershopProvider({ children }: { children: ReactNode }) {
         location_name: barbershopData.location_name || null,
         gallery_images: barbershopData.gallery_images || [],
         video_url: barbershopData.video_url || null,
+        maps_raw_link: barbershopData.maps_raw_link || null,
+        gallery_videos: barbershopData.gallery_videos || [],
+        media_featured_url: barbershopData.media_featured_url || null,
+        media_featured_type: barbershopData.media_featured_type || null,
       } as Barbershop);
       setIsLoading(false);
       return true;

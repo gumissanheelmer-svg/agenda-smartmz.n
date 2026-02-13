@@ -17,6 +17,10 @@ interface LandingPageProps {
   coverImageUrl?: string | null;
   primaryColor?: string;
   city?: string | null;
+  galleryImages?: string[];
+  galleryVideos?: string[];
+  mediaFeaturedUrl?: string | null;
+  mediaFeaturedType?: string | null;
 }
 
 const floatAnimation = {
@@ -45,6 +49,10 @@ export function LandingPage({
   coverImageUrl,
   primaryColor,
   city,
+  galleryImages,
+  galleryVideos,
+  mediaFeaturedUrl,
+  mediaFeaturedType,
 }: LandingPageProps) {
   const displayName = barbershopName || 'Barbearia Elite';
 
@@ -190,6 +198,10 @@ export function LandingPage({
         coverImageUrl={coverImageUrl}
         primaryColor={primaryColor}
         city={city}
+        galleryImages={galleryImages}
+        galleryVideos={galleryVideos}
+        mediaFeaturedUrl={mediaFeaturedUrl}
+        mediaFeaturedType={mediaFeaturedType}
         onBookNow={onBookNow}
       />
 
