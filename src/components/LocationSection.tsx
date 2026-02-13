@@ -183,14 +183,25 @@ export function LocationSection({
                )}
               {hasCoords && (
                 <button
-                  onClick={copyLocation}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold text-sm text-white border border-white/15 bg-white/5 transition-all duration-300 hover:bg-white/10 hover:border-white/25 hover:scale-[1.03]"
-                >
-                  <Copy className="w-4 h-4" />
-                  Copiar localização
-                </button>
+                   onClick={copyLocation}
+                   className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold text-sm text-white border border-white/15 bg-white/5 transition-all duration-300 hover:bg-white/10 hover:border-white/25 hover:scale-[1.03]"
+                 >
+                   <Copy className="w-4 h-4" />
+                   Copiar localização
+                 </button>
               )}
             </div>
+            {hasCoords && (
+              <a
+                href={`https://www.openstreetmap.org/directions?mlat=${latitude}&mlon=${longitude}#map=16/${latitude}/${longitude}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 hover:underline transition-colors mt-1 self-start"
+              >
+                <MapPin className="w-3.5 h-3.5" />
+                Abrir no mapa (alternativo)
+              </a>
+            )}
 
             {!hasCoords && (
               <div className="rounded-2xl p-5 text-center mt-2" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
