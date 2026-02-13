@@ -46,7 +46,9 @@ export function LocationSection({
   onBookNow,
 }: LocationSectionProps) {
   const { toast } = useToast();
-  const hasCoords = latitude != null && longitude != null;
+  const hasCoords = typeof latitude === 'number' && typeof longitude === 'number' &&
+    !isNaN(latitude) && !isNaN(longitude) &&
+    latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180;
   const directionsUrl = hasCoords
     ? `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`
     : null;
