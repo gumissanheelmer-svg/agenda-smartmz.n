@@ -51,15 +51,18 @@ export function LocationSection({
     latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180;
   
   // Generate directions URLs with fallback
+  const lat = hasCoords ? Number(latitude) : null;
+  const lng = hasCoords ? Number(longitude) : null;
+
   const directionsUrl = hasCoords
-    ? `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`
+    ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`
     : null;
-  const fallbackUrl = hasCoords
-    ? `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
+  const pinUrl = hasCoords
+    ? `https://www.google.com/maps?q=${lat},${lng}`
     : null;
   
   const embedUrl = hasCoords
-    ? `https://www.google.com/maps?q=${latitude},${longitude}&z=16&output=embed`
+    ? `https://www.google.com/maps?q=${lat},${lng}&z=16&output=embed`
     : null;
 
   const allMedia = [
@@ -86,8 +89,8 @@ export function LocationSection({
 
   const copyLocation = () => {
     if (!hasCoords) return;
-    navigator.clipboard.writeText(`${latitude},${longitude}`);
-    toast({ title: '✅ Localização copiada', description: `${latitude}, ${longitude}` });
+    navigator.clipboard.writeText(`${lat},${lng}`);
+    toast({ title: '✅ Localização copiada', description: `${lat}, ${lng}` });
   };
 
   return (
@@ -182,7 +185,7 @@ export function LocationSection({
                  </div>
                )}
               {hasCoords && (
-                <button
+                 <button
                    onClick={copyLocation}
                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold text-sm text-white border border-white/15 bg-white/5 transition-all duration-300 hover:bg-white/10 hover:border-white/25 hover:scale-[1.03]"
                  >
@@ -190,10 +193,21 @@ export function LocationSection({
                    Copiar localização
                  </button>
               )}
+              {hasCoords && (
+                <a
+                  href={pinUrl!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold text-sm text-white border border-white/15 bg-white/5 transition-all duration-300 hover:bg-white/10 hover:border-white/25 hover:scale-[1.03]"
+                >
+                  <MapPin className="w-4 h-4" />
+                  Abrir no Maps
+                </a>
+              )}
             </div>
             {hasCoords && (
               <a
-                href={`https://www.openstreetmap.org/directions?mlat=${latitude}&mlon=${longitude}#map=16/${latitude}/${longitude}`}
+                href={`https://www.openstreetmap.org/directions?mlat=${lat}&mlon=${lng}#map=16/${lat}/${lng}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 hover:underline transition-colors mt-1 self-start"
