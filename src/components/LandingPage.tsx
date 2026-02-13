@@ -16,6 +16,7 @@ interface LandingPageProps {
   longitude?: number | null;
   coverImageUrl?: string | null;
   primaryColor?: string;
+  city?: string | null;
 }
 
 const floatAnimation = {
@@ -43,6 +44,7 @@ export function LandingPage({
   longitude,
   coverImageUrl,
   primaryColor,
+  city,
 }: LandingPageProps) {
   const displayName = barbershopName || 'Barbearia Elite';
 
@@ -187,6 +189,7 @@ export function LandingPage({
         longitude={longitude}
         coverImageUrl={coverImageUrl}
         primaryColor={primaryColor}
+        city={city}
         onBookNow={onBookNow}
       />
 

@@ -81,6 +81,7 @@ export default function BarbershopHome() {
           longitude={barbershop.longitude}
           coverImageUrl={barbershop.cover_image_url}
           primaryColor={barbershop.primary_color}
+          city={barbershop.city}
         />
       )}
     </>

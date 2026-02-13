@@ -3,52 +3,168 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { MapPin, Navigation, X } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { MapPin, Navigation, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useToast } from '@/hooks/use-toast';
 
 interface LocationSettingsTabProps {
   settings: any;
   setSettings: (s: any) => void;
 }
 
+function extractCoordinates(input: string): { lat: number; lng: number } | null {
+  const patterns = [
+    /@(-?\d+\.?\d*),(-?\d+\.?\d*)/,
+    /[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/,
+    /place\/[^/]+\/@(-?\d+\.?\d*),(-?\d+\.?\d*)/,
+    /(-?\d+\.\d+),\s*(-?\d+\.\d+)/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = input.match(pattern);
+    if (match) {
+      const lat = parseFloat(match[1]);
+      const lng = parseFloat(match[2]);
+      if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+        return { lat, lng };
+      }
+    }
+  }
+  return null;
+}
+
 export default function LocationSettingsTab({ settings, setSettings }: LocationSettingsTabProps) {
-  const [showMapPicker, setShowMapPicker] = useState(false);
+  const { toast } = useToast();
+  const [mapsInput, setMapsInput] = useState('');
+  const [isDetecting, setIsDetecting] = useState(false);
+  const [detectionResult, setDetectionResult] = useState<'success' | 'error' | null>(null);
 
   const hasCoordinates = settings.latitude && settings.longitude;
 
-  const handleMapClick = useCallback(() => {
-    setShowMapPicker(true);
-  }, []);
-
-  // Listen for messages from embedded map (Google Maps click)
-  const handleMapMessage = useCallback((e: MessageEvent) => {
-    if (e.data?.type === 'map-click') {
-      setSettings({
-        ...settings,
-        latitude: e.data.lat,
-        longitude: e.data.lng,
-      });
-      setShowMapPicker(false);
-    }
-  }, [settings, setSettings]);
-
-  // Build a simple map URL for display
   const mapPreviewUrl = hasCoordinates
-    ? `https://maps.google.com/maps?q=${settings.latitude},${settings.longitude}&z=16&output=embed`
+    ? `https://www.google.com/maps?q=${settings.latitude},${settings.longitude}&z=16&output=embed`
     : null;
 
-  // Interactive map URL for picking location
-  const mapPickerUrl = hasCoordinates
-    ? `https://maps.google.com/maps?q=${settings.latitude},${settings.longitude}&z=16&output=embed`
-    : `https://maps.google.com/maps?q=-25.9692,32.5732&z=12&output=embed`;
+  const handleDetect = useCallback(() => {
+    if (!mapsInput.trim()) {
+      toast({ title: 'Erro', description: 'Cole um link do Google Maps primeiro.', variant: 'destructive' });
+      return;
+    }
+
+    setIsDetecting(true);
+    setDetectionResult(null);
+
+    // Simulate brief processing delay for UX
+    setTimeout(() => {
+      const coords = extractCoordinates(mapsInput);
+
+      if (coords) {
+        setSettings({
+          ...settings,
+          latitude: coords.lat,
+          longitude: coords.lng,
+        });
+        setDetectionResult('success');
+        toast({
+          title: '📍 Localização detectada!',
+          description: `Lat: ${coords.lat.toFixed(6)}, Lng: ${coords.lng.toFixed(6)}`,
+        });
+      } else {
+        setDetectionResult('error');
+        toast({
+          title: 'Não foi possível detectar',
+          description: 'Cole um link completo do Google Maps com coordenadas (ex: https://www.google.com/maps/@-25.9692,32.5732,16z).',
+          variant: 'destructive',
+        });
+      }
+
+      setIsDetecting(false);
+    }, 600);
+  }, [mapsInput, settings, setSettings, toast]);
 
   return (
     <div className="grid gap-6">
+      {/* Smart Detection Card */}
+      <Card className="border-border/50 bg-card/80">
+        <CardHeader className="pb-4">
+          <CardTitle className="font-display flex items-center gap-2 text-lg sm:text-xl">
+            <Navigation className="w-5 h-5 text-primary" />
+            Localização Inteligente
+          </CardTitle>
+          <p className="text-sm text-muted-foreground mt-1">
+            Cole um link do Google Maps e detectamos as coordenadas automaticamente.
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label className="text-sm">Cole o link do Google Maps</Label>
+            <Textarea
+              value={mapsInput}
+              onChange={(e) => {
+                setMapsInput(e.target.value);
+                setDetectionResult(null);
+              }}
+              placeholder="Ex: https://www.google.com/maps/@-25.9692,32.5732,16z ou -25.9692, 32.5732"
+              className="bg-input border-border min-h-[80px] resize-none"
+            />
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Button
+              type="button"
+              onClick={handleDetect}
+              disabled={isDetecting || !mapsInput.trim()}
+              className="w-full sm:w-auto"
+            >
+              {isDetecting ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <MapPin className="w-4 h-4 mr-2" />
+              )}
+              {isDetecting ? 'Detectando...' : 'Detectar localização'}
+            </Button>
+
+            <AnimatePresence>
+              {detectionResult === 'success' && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex items-center gap-1.5 text-sm text-green-500"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  Detectado!
+                </motion.div>
+              )}
+              {detectionResult === 'error' && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex items-center gap-1.5 text-sm text-destructive"
+                >
+                  <AlertCircle className="w-4 h-4" />
+                  Não encontrado
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {!hasCoordinates && (
+            <p className="text-xs text-muted-foreground bg-muted/30 rounded-lg p-3 border border-border/30">
+              💡 Cole um link completo do Google Maps para ativar a localização no seu site público.
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Manual Fields Card */}
       <Card className="border-border/50 bg-card/80">
         <CardHeader className="pb-4">
           <CardTitle className="font-display flex items-center gap-2 text-lg sm:text-xl">
             <MapPin className="w-5 h-5 text-primary" />
-            Localização do Estabelecimento
+            Detalhes do Endereço
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -119,73 +235,57 @@ export default function LocationSettingsTab({ settings, setSettings }: LocationS
             </div>
           </div>
 
-          {/* Map Picker Button */}
-          <div className="pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleMapClick}
-              className="w-full sm:w-auto"
-            >
-              <Navigation className="w-4 h-4 mr-2" />
-              Selecionar no Mapa
-            </Button>
-            <p className="text-xs text-muted-foreground mt-2">
-              Clique para abrir o mapa e ajustar as coordenadas manualmente.
+          {hasCoordinates && (
+            <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <MapPin className="w-3 h-3" />
+              Coordenadas: {settings.latitude?.toFixed(6)}, {settings.longitude?.toFixed(6)}
             </p>
-          </div>
+          )}
+        </CardContent>
+      </Card>
 
-          {/* Map Preview / Picker */}
-          <AnimatePresence>
-            {(showMapPicker || hasCoordinates) && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden"
-              >
-                <div className="relative rounded-xl overflow-hidden border border-border/50">
-                  {showMapPicker && (
-                    <div className="absolute top-3 right-3 z-10">
-                      <Button
-                        size="icon"
-                        variant="secondary"
-                        onClick={() => setShowMapPicker(false)}
-                        className="rounded-full bg-card/90 backdrop-blur-sm"
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  )}
+      {/* Map Preview Card */}
+      <AnimatePresence>
+        {hasCoordinates && mapPreviewUrl && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+          >
+            <Card className="border-border/50 bg-card/80">
+              <CardHeader className="pb-4">
+                <CardTitle className="font-display flex items-center gap-2 text-lg sm:text-xl">
+                  🗺️ Preview do Mapa
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-xl overflow-hidden border border-border/50">
                   <iframe
-                    src={showMapPicker ? mapPickerUrl : mapPreviewUrl!}
+                    src={mapPreviewUrl}
                     className="w-full h-64 sm:h-80"
                     style={{ border: 0 }}
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    title="Localização do estabelecimento"
+                    title="Preview da localização"
                   />
-                  {showMapPicker && (
-                    <div className="bg-secondary/30 p-3 text-center">
-                      <p className="text-xs text-muted-foreground">
-                        Copie as coordenadas do Google Maps e cole nos campos Latitude/Longitude acima.
-                      </p>
-                    </div>
-                  )}
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {hasCoordinates && !showMapPicker && (
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
-              <MapPin className="w-3 h-3" />
-              Coordenadas definidas: {settings.latitude?.toFixed(6)}, {settings.longitude?.toFixed(6)}
-            </p>
-          )}
-        </CardContent>
-      </Card>
+                <div className="mt-3 flex flex-col sm:flex-row gap-2">
+                  <a
+                    href={`https://www.google.com/maps?q=${settings.latitude},${settings.longitude}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-primary hover:underline flex items-center gap-1"
+                  >
+                    <Navigation className="w-3 h-3" />
+                    Abrir no Google Maps
+                  </a>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
