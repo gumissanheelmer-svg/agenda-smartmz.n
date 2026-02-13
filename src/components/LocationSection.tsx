@@ -8,6 +8,7 @@ interface LocationSectionProps {
   longitude?: number | null;
   coverImageUrl?: string | null;
   primaryColor?: string;
+  city?: string | null;
   onBookNow: () => void;
 }
 
@@ -18,6 +19,7 @@ export function LocationSection({
   longitude,
   coverImageUrl,
   primaryColor = '#FACC15',
+  city,
   onBookNow,
 }: LocationSectionProps) {
   const hasCoords = latitude != null && longitude != null;
@@ -122,13 +124,19 @@ export function LocationSection({
               {address && (
                 <div className="flex items-start gap-3">
                   <MapPin className="w-5 h-5 text-white/50 mt-0.5 shrink-0" />
-                  <p className="text-[#B8B8C2] text-base leading-relaxed">{address}</p>
+                  <div>
+                    <p className="text-[#B8B8C2] text-base leading-relaxed">{address}</p>
+                    {city && (
+                      <p className="text-white/40 text-sm mt-0.5">{city}</p>
+                    )}
+                  </div>
                 </div>
               )}
 
-              {hasCoords && (
-                <div className="flex items-center gap-3 text-sm text-white/40">
-                  <span>📍 {latitude?.toFixed(4)}, {longitude?.toFixed(4)}</span>
+              {!address && city && (
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-white/50 mt-0.5 shrink-0" />
+                  <p className="text-[#B8B8C2] text-base leading-relaxed">{city}</p>
                 </div>
               )}
 
@@ -191,7 +199,9 @@ export function LocationSection({
                   border: '1px solid rgba(255,255,255,0.06)',
                 }}
               >
-                <p className="text-white/40 text-sm">Localização ainda não configurada.</p>
+                <p className="text-white/40 text-sm">
+                  Cole um link completo do Google Maps para ativar a localização.
+                </p>
               </div>
             )}
           </motion.div>
