@@ -82,6 +82,10 @@ export default function BarbershopHome() {
           coverImageUrl={barbershop.cover_image_url}
           primaryColor={barbershop.primary_color}
           city={barbershop.city}
+          galleryImages={barbershop.gallery_images}
+          galleryVideos={barbershop.gallery_videos}
+          mediaFeaturedUrl={barbershop.media_featured_url}
+          mediaFeaturedType={barbershop.media_featured_type}
         />
       )}
     </>

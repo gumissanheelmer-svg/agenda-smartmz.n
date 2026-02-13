@@ -42,6 +42,10 @@ interface BarbershopSettings {
   location_name: string | null;
   gallery_images: string[];
   video_url: string | null;
+  maps_raw_link: string | null;
+  gallery_videos: string[];
+  media_featured_url: string | null;
+  media_featured_type: string | null;
 }
 
 const getBusinessLabels = (type: string) => {
@@ -87,6 +91,7 @@ export default function SettingsPage() {
       setSettings({
         ...data,
         gallery_images: data.gallery_images || [],
+        gallery_videos: data.gallery_videos || [],
         background_overlay_level: (data.background_overlay_level || 'medium') as 'low' | 'medium' | 'high',
         payment_methods_enabled: data.payment_methods_enabled || [],
       } as BarbershopSettings);
@@ -128,6 +133,10 @@ export default function SettingsPage() {
         location_name: settings.location_name,
         gallery_images: settings.gallery_images,
         video_url: settings.video_url,
+        maps_raw_link: settings.maps_raw_link,
+        gallery_videos: settings.gallery_videos,
+        media_featured_url: settings.media_featured_url,
+        media_featured_type: settings.media_featured_type,
       })
       .eq('id', settings.id);
 
