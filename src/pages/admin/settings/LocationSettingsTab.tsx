@@ -16,11 +16,12 @@ interface LocationSettingsTabProps {
 }
 
 function extractCoordinates(input: string): { lat: number; lng: number } | null {
+  // Priority order: @lat,lng > q=lat,lng > place/@lat,lng > raw lat,lng pair
   const patterns = [
-    /@(-?\d+\.?\d*),(-?\d+\.?\d*)/,
-    /[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/,
-    /place\/[^/]+\/@(-?\d+\.?\d*),(-?\d+\.?\d*)/,
-    /(-?\d+\.\d+),\s*(-?\d+\.\d+)/,
+    /@(-?\d+\.\d+),(-?\d+\.\d+)/,
+    /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/,
+    /place\/[^/]+\/@(-?\d+\.\d+),(-?\d+\.\d+)/,
+    /(-?\d+\.\d{3,}),\s*(-?\d+\.\d{3,})/,
   ];
   for (const pattern of patterns) {
     const match = input.match(pattern);
@@ -43,7 +44,7 @@ export default function LocationSettingsTab({ settings, setSettings }: LocationS
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
-  const hasCoordinates = settings.latitude && settings.longitude;
+  const hasCoordinates = typeof settings.latitude === 'number' && typeof settings.longitude === 'number' && !isNaN(settings.latitude) && !isNaN(settings.longitude);
   const mapPreviewUrl = hasCoordinates
     ? `https://www.google.com/maps?q=${settings.latitude},${settings.longitude}&z=16&output=embed`
     : null;
@@ -186,6 +187,16 @@ export default function LocationSettingsTab({ settings, setSettings }: LocationS
             </AnimatePresence>
           </div>
 
+          {hasCoordinates && (
+            <div className="text-sm bg-muted/30 rounded-lg p-3 border border-border/30 text-foreground">
+              📍 <strong>Localização salva:</strong> {settings.latitude}, {settings.longitude}
+              <br />
+              <span className="text-xs text-muted-foreground">
+                Rota: <a href={`https://www.google.com/maps/dir/?api=1&destination=${settings.latitude},${settings.longitude}`} target="_blank" rel="noopener noreferrer" className="underline text-primary">Testar "Traçar rota"</a>
+              </span>
+            </div>
+          )}
+
           {!hasCoordinates && (
             <p className="text-xs text-muted-foreground bg-muted/30 rounded-lg p-3 border border-border/30">
               💡 Cole um link completo do Google Maps para ativar a localização no seu site público.
@@ -226,11 +237,11 @@ export default function LocationSettingsTab({ settings, setSettings }: LocationS
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-sm">Latitude</Label>
-              <Input type="number" step="any" value={settings.latitude || ''} onChange={(e) => setSettings({ ...settings, latitude: e.target.value ? parseFloat(e.target.value) : null })} placeholder="-25.9692" className="bg-input border-border" readOnly={!!detectionResult} />
+              <Input type="number" step="any" value={settings.latitude ?? ''} onChange={(e) => setSettings({ ...settings, latitude: e.target.value ? parseFloat(e.target.value) : null })} placeholder="-25.9692" className="bg-input border-border" />
             </div>
             <div className="space-y-2">
               <Label className="text-sm">Longitude</Label>
-              <Input type="number" step="any" value={settings.longitude || ''} onChange={(e) => setSettings({ ...settings, longitude: e.target.value ? parseFloat(e.target.value) : null })} placeholder="32.5732" className="bg-input border-border" readOnly={!!detectionResult} />
+              <Input type="number" step="any" value={settings.longitude ?? ''} onChange={(e) => setSettings({ ...settings, longitude: e.target.value ? parseFloat(e.target.value) : null })} placeholder="32.5732" className="bg-input border-border" />
             </div>
           </div>
         </CardContent>
