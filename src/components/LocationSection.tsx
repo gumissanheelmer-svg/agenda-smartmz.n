@@ -49,9 +49,15 @@ export function LocationSection({
   const hasCoords = typeof latitude === 'number' && typeof longitude === 'number' &&
     !isNaN(latitude) && !isNaN(longitude) &&
     latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180;
+  
+  // Generate directions URLs with fallback
   const directionsUrl = hasCoords
     ? `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`
     : null;
+  const fallbackUrl = hasCoords
+    ? `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
+    : null;
+  
   const embedUrl = hasCoords
     ? `https://www.google.com/maps?q=${latitude},${longitude}&z=16&output=embed`
     : null;
@@ -151,22 +157,30 @@ export function LocationSection({
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-3 mt-4">
-              {directionsUrl && (
-                <a
-                  href={directionsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold text-sm text-[#111] transition-all duration-300 hover:scale-[1.03] animate-pulse-glow"
-                  style={{
-                    background: `linear-gradient(135deg, ${primaryColor}, ${primaryColor}CC)`,
-                    boxShadow: `0 0 24px rgba(214,177,94,0.28)`,
-                  }}
-                  onClick={() => toast({ title: '🗺️ Abrindo direções...' })}
-                >
-                  <Navigation className="w-4 h-4" />
-                  Traçar rota agora — te esperamos 👋
-                </a>
-              )}
+               {hasCoords ? (
+                 <a
+                   href={directionsUrl!}
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold text-sm text-[#111] transition-all duration-300 hover:scale-[1.03] animate-pulse-glow"
+                   style={{
+                     background: `linear-gradient(135deg, ${primaryColor}, ${primaryColor}CC)`,
+                     boxShadow: `0 0 24px rgba(214,177,94,0.28)`,
+                   }}
+                 >
+                   <Navigation className="w-4 h-4" />
+                   Traçar rota agora — te esperamos 👋
+                 </a>
+               ) : (
+                 <div
+                   className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold text-sm text-white/40 cursor-not-allowed"
+                   style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+                   title="Defina a localização nas configurações para ativar"
+                 >
+                   <Navigation className="w-4 h-4" />
+                   Localização não configurada
+                 </div>
+               )}
               {hasCoords && (
                 <button
                   onClick={copyLocation}
