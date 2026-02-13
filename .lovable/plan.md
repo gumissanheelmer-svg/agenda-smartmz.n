@@ -1,98 +1,60 @@
 
-
-## Localização Inteligente - Plano de Implementação
+## Localização Inteligente (sem API externa)
 
 ### Resumo
-Adicionar um campo inteligente na aba Localização das Configurações do Admin onde o admin pode colar um link do Google Maps, Plus Code ou coordenadas, e o sistema automaticamente detecta lat/lng, preenche endereço, cidade e país, e mostra preview do mapa.
+Refatorar a aba "Localização" nas configurações do admin para incluir detecção automática de coordenadas a partir de links do Google Maps, usando apenas parsing client-side (regex). Sem APIs externas.
 
 ---
 
-### 1. Configuração da API Key
+### 1. Refatorar `LocationSettingsTab.tsx`
 
-O sistema precisa de uma chave da **Google Geocoding API** para converter endereços/Plus Codes em coordenadas.
+Substituir o componente atual por uma versão com:
 
-- Solicitar ao utilizador a chave `GOOGLE_MAPS_API_KEY` via ferramenta de segredos
-- A chave será usada apenas no backend (edge function), nunca exposta no frontend
-
----
-
-### 2. Backend - Edge Function `geocode`
-
-Criar `supabase/functions/geocode/index.ts`:
-
-- Recebe `{ inputText }` via POST
-- Lógica de detecção:
-  1. **Coordenadas diretas**: regex `-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?` -> usa reverse geocoding para obter endereço
-  2. **Link do Google Maps**: extrai coords de `@lat,lng` ou `q=lat,lng` ou `/place/...` -> reverse geocoding
-  3. **Plus Code ou endereço textual**: chama Google Geocoding API (forward geocoding)
-- Retorna: `{ lat, lng, formattedAddress, city, country }`
-- Autenticação: requer token JWT do utilizador logado
+- **Campo principal**: Textarea com placeholder "Cole o link do Google Maps (ex: https://www.google.com/maps/...)"
+- **Botão "Detectar localização"**: Executa parsing do texto colado
+- **Lógica de parsing** (client-side, sem API):
+  - Padrão `@(-?\d+\.\d+),(-?\d+\.\d+)` -> extrai lat/lng
+  - Padrão `q=(-?\d+\.\d+),(-?\d+\.\d+)` -> extrai lat/lng
+  - Padrão `place/.../@(-?\d+\.\d+),(-?\d+\.\d+)` -> extrai lat/lng
+  - Padrão direto `-?\d+\.\d+,\s*-?\d+\.\d+` -> extrai lat/lng
+- **Feedback**: Toast de sucesso com coordenadas detectadas ou erro se nao encontrar
+- **Auto-preenchimento**: latitude e longitude nos campos existentes
+- **Preview do mapa**: iframe embed `https://www.google.com/maps?q=LAT,LNG&output=embed` quando coordenadas existirem
+- **Mensagem quando sem coordenadas**: "Cole um link completo do Google Maps para ativar a localização."
+- Manter campos manuais existentes: location_name, address, city, neighborhood, latitude, longitude (editaveis)
 
 ---
 
-### 3. Migração de Banco de Dados
+### 2. Atualizar `LocationSection.tsx` (site publico)
 
-Adicionar coluna `country` (text, nullable) à tabela `barbershops` e atualizar a RPC `get_public_barbershop` para incluí-la.
-
----
-
-### 4. Frontend - Refatorar `LocationSettingsTab`
-
-Substituir o componente atual por uma versão com "Localização Inteligente":
-
-- **Novo campo principal**: textarea/input com placeholder "Cole um link do Google Maps, Plus Code ou endereço"
-- **Botão "Detectar Localização"**: chama a edge function, mostra loading spinner
-- **Feedback**: toast de sucesso/erro
-- **Campos auto-preenchidos** (editáveis): endereço, cidade, país (novo), latitude, longitude
-- **Preview do mapa**: iframe embed quando lat/lng existirem
-- Manter campos existentes (location_name, neighborhood) editáveis manualmente
+- Quando existirem coordenadas: mostrar secao "Onde estamos" com mapa embed e botao "Obter direcoes"
+- Quando nao existirem coordenadas: mostrar mensagem discreta "Cole um link completo do Google Maps para ativar a localização." em vez de "Localização ainda não configurada."
+- Adicionar exibicao de `city` se disponivel
 
 ---
 
-### 5. Atualizar `SettingsPage` e `useBarbershop`
+### 3. Ficheiros a modificar
 
-- Adicionar `country` ao `handleSave` e à interface `BarbershopSettings`
-- Adicionar `country` ao hook `useBarbershop`
-
----
-
-### 6. Site Público - `LocationSection`
-
-- Já funciona corretamente com lat/lng existentes
-- Adicionar exibição de `city` e `country` quando disponíveis
-- Já esconde a seção quando não há coordenadas
+| Ficheiro | Alteracao |
+|---|---|
+| `src/pages/admin/settings/LocationSettingsTab.tsx` | Refatorar: adicionar campo de link, botao detectar, parsing regex, preview mapa |
+| `src/components/LocationSection.tsx` | Atualizar mensagem quando sem coordenadas, mostrar cidade |
 
 ---
 
-### Detalhes Técnicos
+### Detalhes Tecnicos
 
-**Parsing de URLs do Google Maps** (na edge function):
+**Funcao de parsing (client-side)**:
 ```text
-Padrões suportados:
-- https://maps.google.com/maps?q=LAT,LNG
-- https://www.google.com/maps/@LAT,LNG,Z
-- https://www.google.com/maps/place/.../@LAT,LNG
-- https://goo.gl/maps/... (seguir redirect)
-- Plus Codes: RHVP+J9F, Tete, Moçambique
-- Coordenadas: -25.9692, 32.5732
+function extractCoordinates(input: string): { lat: number; lng: number } | null
+  1. Tentar regex: /@(-?\d+\.?\d*),(-?\d+\.?\d*)/
+  2. Tentar regex: /[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/
+  3. Tentar regex: /place\/[^/]+\/@(-?\d+\.?\d*),(-?\d+\.?\d*)/
+  4. Tentar regex generico: /(-?\d+\.?\d+),\s*(-?\d+\.?\d+)/
+  5. Validar ranges: lat entre -90 e 90, lng entre -180 e 180
+  6. Retornar null se nenhum padrao encontrado
 ```
 
-**Fluxo da Edge Function**:
-```text
-inputText
-  |
-  +--> regex coords? ---> reverse geocode ---> { lat, lng, address, city, country }
-  |
-  +--> Google Maps URL? ---> extrair coords ---> reverse geocode ---> resultado
-  |
-  +--> Outro texto? ---> forward geocode ---> resultado
-```
+Sem migracoes de banco necessarias -- todos os campos (latitude, longitude, address, city, neighborhood, location_name) ja existem na tabela barbershops.
 
-**Ficheiros a criar/modificar**:
-- Criar: `supabase/functions/geocode/index.ts`
-- Modificar: `src/pages/admin/settings/LocationSettingsTab.tsx` (refatorar completamente)
-- Modificar: `src/pages/admin/SettingsPage.tsx` (adicionar `country`)
-- Modificar: `src/hooks/useBarbershop.tsx` (adicionar `country`)
-- Modificar: `src/components/LocationSection.tsx` (exibir cidade/país)
-- Migração SQL: adicionar coluna `country`, atualizar RPC
-
+Sem edge functions -- tudo e feito no frontend com regex.
