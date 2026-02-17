@@ -24,6 +24,7 @@ import ManagersPage from "./pages/admin/ManagersPage";
 import BarberAccountsPage from "./pages/admin/BarberAccountsPage";
 import ProfessionalSchedulesPage from "./pages/admin/ProfessionalSchedulesPage";
 import AttendanceManagementPage from "./pages/admin/AttendanceManagementPage";
+import ReceiptsPage from "./pages/admin/ReceiptsPage";
 import BarberRegister from "./pages/BarberRegister";
 import BarberDashboard from "./pages/BarberDashboard";
 import BarbershopRegister from "./pages/BarbershopRegister";
@@ -74,6 +75,7 @@ const App = () => (
                     <Route path="managers" element={<ManagersPage />} />
                     <Route path="settings" element={<SettingsPage />} />
                     <Route path="accounts" element={<BarberAccountsPage />} />
+                    <Route path="receipts" element={<ReceiptsPage />} />
                   </Route>
                   
                   {/* Barber routes */}

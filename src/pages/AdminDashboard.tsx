@@ -23,7 +23,8 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Receipt
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Helmet } from 'react-helmet-async';
@@ -48,6 +49,7 @@ const getNavItems = (professionalsLabel: string, isBarbershop: boolean, isAdmin:
     { to: '/admin/dashboard/services', icon: Scissors, label: 'Serviços' },
     { to: '/admin/dashboard/clients', icon: Users, label: 'Clientes' },
     { to: '/admin/dashboard/expenses', icon: Wallet, label: 'Despesas' },
+    { to: '/admin/dashboard/receipts', icon: Receipt, label: 'Recibos' },
   ];
   
   if (isAdmin) {
