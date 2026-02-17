@@ -701,6 +701,69 @@ export type Database = {
         }
         Relationships: []
       }
+      receipts: {
+        Row: {
+          amount: number
+          appointment_id: string | null
+          barbershop_id: string
+          client_name: string
+          created_at: string
+          id: string
+          issued_at: string
+          issued_by: string
+          payment_method: string
+          professional_name: string
+          receipt_number: string
+          service_name: string
+          transaction_code: string | null
+        }
+        Insert: {
+          amount: number
+          appointment_id?: string | null
+          barbershop_id: string
+          client_name: string
+          created_at?: string
+          id?: string
+          issued_at?: string
+          issued_by: string
+          payment_method: string
+          professional_name: string
+          receipt_number: string
+          service_name: string
+          transaction_code?: string | null
+        }
+        Update: {
+          amount?: number
+          appointment_id?: string | null
+          barbershop_id?: string
+          client_name?: string
+          created_at?: string
+          id?: string
+          issued_at?: string
+          issued_by?: string
+          payment_method?: string
+          professional_name?: string
+          receipt_number?: string
+          service_name?: string
+          transaction_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receipts_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receipts_barbershop_id_fkey"
+            columns: ["barbershop_id"]
+            isOneToOne: false
+            referencedRelation: "barbershops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_images: {
         Row: {
           barbershop_id: string
