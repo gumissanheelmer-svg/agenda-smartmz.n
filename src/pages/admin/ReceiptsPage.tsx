@@ -151,6 +151,7 @@ export default function ReceiptsPage() {
       transaction_code: receipt.transaction_code,
       barbershop_name: barbershop?.name,
       barbershop_logo: barbershop?.logo_url,
+      print_with_logo: (barbershop as any)?.print_with_logo !== false,
     });
     setDialogOpen(true);
   };
@@ -254,8 +255,11 @@ export default function ReceiptsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => viewReceipt(receipt)} className="text-white/50 hover:text-white">
+                      <Button variant="ghost" size="icon" onClick={() => viewReceipt(receipt)} className="text-white/50 hover:text-white" title="Ver recibo">
                         <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => { viewReceipt(receipt); }} className="text-white/50 hover:text-white" title="Imprimir recibo">
+                        <Printer className="w-4 h-4" />
                       </Button>
                     </div>
                   </TableCell>
