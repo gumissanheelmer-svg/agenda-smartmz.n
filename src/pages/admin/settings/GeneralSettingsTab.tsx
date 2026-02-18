@@ -294,6 +294,25 @@ export default function GeneralSettingsTab({ settings, setSettings, labels }: Ge
           )}
         </CardContent>
       </Card>
+
+      {/* Receipt Settings */}
+      <Card className="border-border/50 bg-card/80">
+        <CardHeader className="pb-4">
+          <CardTitle className="font-display flex items-center gap-2 text-lg sm:text-xl">
+            <CreditCard className="w-5 h-5 text-primary" />
+            Recibos
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between p-4 rounded-lg border border-border/50 bg-secondary/20">
+            <div className="space-y-0.5">
+              <Label htmlFor="print_with_logo" className="text-base font-medium cursor-pointer">Imprimir com logotipo</Label>
+              <p className="text-sm text-muted-foreground">Quando ativado, o logotipo aparece no recibo impresso (preto e branco).</p>
+            </div>
+            <Switch id="print_with_logo" checked={settings.print_with_logo !== false} onCheckedChange={(checked) => setSettings({ ...settings, print_with_logo: checked })} />
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

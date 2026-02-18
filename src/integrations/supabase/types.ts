@@ -327,6 +327,7 @@ export type Database = {
           payment_required: boolean
           prep_buffer_minutes: number
           primary_color: string
+          print_with_logo: boolean
           secondary_color: string
           slot_interval_minutes: number
           slug: string
@@ -368,6 +369,7 @@ export type Database = {
           payment_required?: boolean
           prep_buffer_minutes?: number
           primary_color?: string
+          print_with_logo?: boolean
           secondary_color?: string
           slot_interval_minutes?: number
           slug: string
@@ -409,6 +411,7 @@ export type Database = {
           payment_required?: boolean
           prep_buffer_minutes?: number
           primary_color?: string
+          print_with_logo?: boolean
           secondary_color?: string
           slot_interval_minutes?: number
           slug?: string
