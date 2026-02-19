@@ -23,15 +23,31 @@ export function SmartSummary() {
     const fetchData = async () => {
       setLoading(true);
 
-      // Get admin name from barber_accounts or user email
-      const { data: accountData } = await supabase
-        .from('barber_accounts')
-        .select('name')
-        .eq('user_id', user.id)
-        .maybeSingle();
+      // Get owner name: barbershop.owner_name > barber_accounts.name > fallback
+      let ownerName = '';
 
-      const name = accountData?.name || user.email?.split('@')[0] || 'Admin';
-      setAdminName(name);
+      if (barbershopId) {
+        const { data: shopData } = await supabase
+          .from('barbershops')
+          .select('owner_name, name')
+          .eq('id', barbershopId)
+          .maybeSingle();
+
+        if (shopData?.owner_name) {
+          ownerName = shopData.owner_name.split(' ')[0];
+        } else {
+          // Fallback to barber_accounts name
+          const { data: accountData } = await supabase
+            .from('barber_accounts')
+            .select('name')
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+          ownerName = accountData?.name?.split(' ')[0] || '';
+        }
+      }
+
+      setAdminName(ownerName);
 
       // Get today's date in YYYY-MM-DD format
       const today = new Date().toISOString().split('T')[0];
@@ -155,10 +171,10 @@ export function SmartSummary() {
       {/* Greeting */}
       <div className="space-y-1">
         <h1 className="text-3xl font-bold text-white font-display">
-          Bem-vindo(a), {adminName} 👋
+          {adminName ? `Bem-vindo, ${adminName}` : 'Bem-vindo'} 👋
         </h1>
         <p className="text-[#B8C0D4] text-sm">
-          Aqui está o desempenho do seu salão hoje.
+          Aqui está o desempenho da sua barbearia hoje.
         </p>
       </div>
 

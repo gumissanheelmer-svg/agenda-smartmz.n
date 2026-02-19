@@ -47,6 +47,7 @@ interface BarbershopSettings {
   media_featured_url: string | null;
   media_featured_type: string | null;
   print_with_logo: boolean;
+  owner_name: string | null;
 }
 
 const getBusinessLabels = (type: string) => {
@@ -139,6 +140,7 @@ export default function SettingsPage() {
         media_featured_url: settings.media_featured_url,
         media_featured_type: settings.media_featured_type,
         print_with_logo: settings.print_with_logo,
+        owner_name: settings.owner_name,
       })
       .eq('id', settings.id);
 

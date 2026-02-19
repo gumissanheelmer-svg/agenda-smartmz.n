@@ -106,6 +106,17 @@ export default function GeneralSettingsTab({ settings, setSettings, labels }: Ge
               />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="owner_name" className="text-sm sm:text-base">Nome do Proprietário</Label>
+              <Input
+                id="owner_name"
+                value={settings.owner_name || ''}
+                onChange={(e) => setSettings({ ...settings, owner_name: e.target.value })}
+                className="bg-input border-border w-full"
+                placeholder="Ex: Afonso"
+              />
+              <p className="text-xs text-muted-foreground">Exibido na saudação do painel.</p>
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="slug" className="text-sm sm:text-base">URL (slug)</Label>
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground text-xs sm:text-sm">/b/</span>
