@@ -1,21 +1,25 @@
 
 
-## Adicionar Link Alternativo OpenStreetMap
+## Exibir nome completo do proprietario na saudacao
 
-Adicionar um terceiro CTA discreto abaixo dos botoes existentes, usando OpenStreetMap como fallback para casos onde o Google Maps nao funcione.
+**Problema atual**: O codigo em `SmartSummary.tsx` usa `.split(' ')[0]` para extrair apenas o primeiro nome do `owner_name`. Se o proprietario digitou "Elmer Diamntino", aparece apenas "Elmer".
 
-### Mudanca
+**Solucao**: Remover o `.split(' ')[0]` e usar o valor completo de `owner_name` tal como foi digitado nas configuracoes. Assim, se a pessoa escreveu um nome, aparece um nome; se escreveu dois, aparecem dois.
 
-**Ficheiro:** `src/components/LocationSection.tsx`
+**Exemplo**:
+- owner_name = "Afonso" → "Bem-vindo, Afonso"
+- owner_name = "Elmer Diamntino" → "Bem-vindo, Elmer Diamntino"
 
-- Adicionar um link `<a>` com estilo outline/texto discreto (menor que os CTAs principais) logo apos o botao "Copiar localizacao"
-- URL: `https://www.openstreetmap.org/directions?mlat=${latitude}&mlon=${longitude}#map=16/${latitude}/${longitude}`
-- Texto: "Abrir no mapa (alternativo)"
-- Icone: `MapPin` ou `Navigation`
-- Visivel apenas quando `hasCoords` for verdadeiro
-- Estilo: texto branco/50, sem fundo, underline on hover — para nao competir visualmente com o CTA principal
+---
 
-### Detalhes Tecnicos
+### Detalhes tecnicos
 
-O link sera adicionado dentro do bloco de CTAs existente (linha ~157), como um terceiro item condicional apos "Copiar localizacao". Usara o mesmo padrao `<a target="_blank" rel="noopener noreferrer">` para garantir abertura em nova aba sem bloqueio.
+**Arquivo**: `src/components/admin/SmartSummary.tsx`
+
+Alterar duas linhas onde `.split(' ')[0]` e usado:
+
+- Linha 35: `ownerName = shopData.owner_name.split(' ')[0]` → `ownerName = shopData.owner_name`
+- Linha 43: `ownerName = accountData?.name?.split(' ')[0] || ''` → `ownerName = accountData?.name || ''`
+
+Nenhuma outra alteracao necessaria. O campo "Nome do Proprietario" nas configuracoes ja aceita qualquer texto, entao o utilizador controla quantos nomes aparecem.
 
