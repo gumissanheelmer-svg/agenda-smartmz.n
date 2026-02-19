@@ -1,0 +1,1 @@
+ALTER TABLE public.barbershops ADD COLUMN owner_name text;

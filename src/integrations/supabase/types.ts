@@ -323,6 +323,7 @@ export type Database = {
           neighborhood: string | null
           opening_time: string | null
           owner_email: string | null
+          owner_name: string | null
           payment_methods_enabled: string[] | null
           payment_required: boolean
           prep_buffer_minutes: number
@@ -365,6 +366,7 @@ export type Database = {
           neighborhood?: string | null
           opening_time?: string | null
           owner_email?: string | null
+          owner_name?: string | null
           payment_methods_enabled?: string[] | null
           payment_required?: boolean
           prep_buffer_minutes?: number
@@ -407,6 +409,7 @@ export type Database = {
           neighborhood?: string | null
           opening_time?: string | null
           owner_email?: string | null
+          owner_name?: string | null
           payment_methods_enabled?: string[] | null
           payment_required?: boolean
           prep_buffer_minutes?: number
