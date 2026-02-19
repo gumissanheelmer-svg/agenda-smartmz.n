@@ -34,7 +34,7 @@ export function SmartSummary() {
           .maybeSingle();
 
         if (shopData?.owner_name) {
-          ownerName = shopData.owner_name.split(' ')[0];
+          ownerName = shopData.owner_name;
         } else {
           // Fallback to barber_accounts name
           const { data: accountData } = await supabase
@@ -43,7 +43,7 @@ export function SmartSummary() {
             .eq('user_id', user.id)
             .maybeSingle();
 
-          ownerName = accountData?.name?.split(' ')[0] || '';
+          ownerName = accountData?.name || '';
         }
       }
 
