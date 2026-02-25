@@ -1,9 +1,16 @@
 import { motion } from 'framer-motion';
-
-// ── Altere esta URL para o vídeo de demonstração real ──
-const VSL_EMBED_URL = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+import { Video } from 'lucide-react';
+import { useLandingSettings } from '@/hooks/useLandingSettings';
 
 export function VideoSection() {
+  const { settings, isLoading } = useLandingSettings();
+
+  if (isLoading) return null;
+  if (!settings.vsl_enabled) return null;
+
+  // No embed URL and not an admin preview — hide completely
+  if (!settings.vsl_embed_url) return null;
+
   return (
     <section className="py-24 px-6">
       <div className="max-w-4xl mx-auto">
@@ -16,10 +23,10 @@ export function VideoSection() {
         >
           <span className="text-xs font-medium text-primary tracking-widest uppercase mb-3 block">Demonstração</span>
           <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground tracking-tight">
-            Veja como funciona em 2 minutos
+            {settings.vsl_title}
           </h2>
           <p className="mt-4 text-muted-foreground text-lg max-w-lg mx-auto">
-            Uma demonstração rápida do Agenda Smart na prática.
+            {settings.vsl_subtitle}
           </p>
         </motion.div>
 
@@ -32,8 +39,8 @@ export function VideoSection() {
         >
           <div className="aspect-video">
             <iframe
-              src={VSL_EMBED_URL}
-              title="Demonstração Agenda Smart"
+              src={settings.vsl_embed_url}
+              title={settings.vsl_title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               loading="lazy"

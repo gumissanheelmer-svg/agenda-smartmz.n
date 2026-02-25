@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Calendar, Shield, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useLandingSettings } from '@/hooks/useLandingSettings';
 
 const blurFadeUp = {
   hidden: { opacity: 0, y: 40, filter: 'blur(10px)' },
@@ -35,6 +36,13 @@ function FloatingBadge({ children, delay = 0, x = 0, y = 0 }: {
 }
 
 export function HeroSection() {
+  const { settings } = useLandingSettings();
+
+  // Split title on period to highlight second part
+  const titleParts = settings.hero_title.split('.');
+  const firstPart = titleParts[0] ? titleParts[0] + '.' : settings.hero_title;
+  const highlightPart = titleParts[1]?.trim() || '';
+
   return (
     <section className="flex flex-col items-center justify-center min-h-[calc(100vh-180px)] px-6 pt-8 pb-20">
       <div className="relative w-full max-w-6xl mx-auto">
@@ -68,16 +76,22 @@ export function HeroSection() {
             variants={blurFadeUp}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Seu negócio.{' '}
-            <span className="relative">
-              <span className="text-primary">Automatizado.</span>
-              <motion.span
-                className="absolute -bottom-2 left-0 right-0 h-[3px] bg-gradient-to-r from-primary via-primary/80 to-transparent rounded-full"
-                initial={{ scaleX: 0, originX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 0.8, delay: 1 }}
-              />
-            </span>
+            {highlightPart ? (
+              <>
+                {firstPart}{' '}
+                <span className="relative">
+                  <span className="text-primary">{highlightPart}</span>
+                  <motion.span
+                    className="absolute -bottom-2 left-0 right-0 h-[3px] bg-gradient-to-r from-primary via-primary/80 to-transparent rounded-full"
+                    initial={{ scaleX: 0, originX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 0.8, delay: 1 }}
+                  />
+                </span>
+              </>
+            ) : (
+              settings.hero_title
+            )}
           </motion.h1>
 
           <motion.p
@@ -87,7 +101,7 @@ export function HeroSection() {
             variants={blurFadeUp}
             transition={{ duration: 0.7, delay: 0.4 }}
           >
-            Gerencie agendamentos, equipa e pagamentos num só lugar. Seus clientes agendam 24h — você foca no que importa.
+            {settings.hero_subtitle}
           </motion.p>
 
           <motion.div
@@ -100,16 +114,18 @@ export function HeroSection() {
             <Link to="/register" className="w-full sm:w-auto">
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
                 <Button variant="hero" size="xl" className="w-full sm:w-auto shadow-[0_0_30px_hsl(43_74%_49%_/_0.25)] hover:shadow-[0_0_50px_hsl(43_74%_49%_/_0.35)] transition-shadow duration-500">
-                  Começar Agora — É Grátis
+                  {settings.primary_cta_label}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </motion.div>
             </Link>
-            <Link to="/login" className="w-full sm:w-auto">
-              <Button variant="outline" size="xl" className="w-full sm:w-auto">
-                Entrar
-              </Button>
-            </Link>
+            {settings.secondary_cta_enabled && (
+              <Link to="/login" className="w-full sm:w-auto">
+                <Button variant="outline" size="xl" className="w-full sm:w-auto">
+                  {settings.secondary_cta_label}
+                </Button>
+              </Link>
+            )}
           </motion.div>
 
           <motion.p

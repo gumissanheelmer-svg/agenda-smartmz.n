@@ -7,13 +7,14 @@ import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, LayoutDashboard, Building2, CreditCard, LogOut, RefreshCw, Users, DollarSign } from 'lucide-react';
+import { Shield, LayoutDashboard, Building2, CreditCard, LogOut, RefreshCw, Users, DollarSign, Globe } from 'lucide-react';
 import { Zap } from 'lucide-react';
 import { DashboardTab } from '@/components/superadmin/DashboardTab';
 import { BusinessesTab } from '@/components/superadmin/BusinessesTab';
 import { SubscriptionsTab } from '@/components/superadmin/SubscriptionsTab';
 import { AffiliatesTab } from '@/components/superadmin/AffiliatesTab';
 import { AffiliateSalesTab } from '@/components/superadmin/AffiliateSalesTab';
+import { LandingSettingsTab } from '@/components/superadmin/LandingSettingsTab';
 
 interface Barbershop {
   id: string;
@@ -326,7 +327,7 @@ export default function SuperAdminDashboard() {
 
         <main className="container mx-auto px-4 py-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full max-w-2xl grid-cols-5">
+            <TabsList className="grid w-full max-w-3xl grid-cols-6">
               <TabsTrigger value="dashboard" className="flex items-center gap-2">
                 <LayoutDashboard className="h-4 w-4" />
                 <span className="hidden sm:inline">Dashboard</span>
@@ -346,6 +347,10 @@ export default function SuperAdminDashboard() {
               <TabsTrigger value="affiliate-sales" className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4" />
                 <span className="hidden sm:inline">Vendas</span>
+              </TabsTrigger>
+              <TabsTrigger value="landing" className="flex items-center gap-2">
+                <Globe className="h-4 w-4" />
+                <span className="hidden sm:inline">Landing</span>
               </TabsTrigger>
             </TabsList>
 
@@ -391,6 +396,10 @@ export default function SuperAdminDashboard() {
                 affiliatePerformance={affiliatePerformance}
                 onCreateSale={handleCreateAffiliateSale}
               />
+            </TabsContent>
+
+            <TabsContent value="landing">
+              <LandingSettingsTab />
             </TabsContent>
           </Tabs>
         </main>
