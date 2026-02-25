@@ -536,6 +536,78 @@ export type Database = {
         }
         Relationships: []
       }
+      landing_settings: {
+        Row: {
+          currency_code: string
+          hero_subtitle: string
+          hero_title: string
+          id: string
+          is_enabled: boolean
+          plans: Json
+          pricing_discount_label: string
+          pricing_enabled: boolean
+          pricing_subtitle: string
+          pricing_title: string
+          primary_cta_label: string
+          secondary_cta_enabled: boolean
+          secondary_cta_label: string
+          site_key: string
+          updated_at: string
+          vsl_cover_image_url: string | null
+          vsl_embed_url: string | null
+          vsl_enabled: boolean
+          vsl_minutes_label: number
+          vsl_subtitle: string
+          vsl_title: string
+        }
+        Insert: {
+          currency_code?: string
+          hero_subtitle?: string
+          hero_title?: string
+          id?: string
+          is_enabled?: boolean
+          plans?: Json
+          pricing_discount_label?: string
+          pricing_enabled?: boolean
+          pricing_subtitle?: string
+          pricing_title?: string
+          primary_cta_label?: string
+          secondary_cta_enabled?: boolean
+          secondary_cta_label?: string
+          site_key?: string
+          updated_at?: string
+          vsl_cover_image_url?: string | null
+          vsl_embed_url?: string | null
+          vsl_enabled?: boolean
+          vsl_minutes_label?: number
+          vsl_subtitle?: string
+          vsl_title?: string
+        }
+        Update: {
+          currency_code?: string
+          hero_subtitle?: string
+          hero_title?: string
+          id?: string
+          is_enabled?: boolean
+          plans?: Json
+          pricing_discount_label?: string
+          pricing_enabled?: boolean
+          pricing_subtitle?: string
+          pricing_title?: string
+          primary_cta_label?: string
+          secondary_cta_enabled?: boolean
+          secondary_cta_label?: string
+          site_key?: string
+          updated_at?: string
+          vsl_cover_image_url?: string | null
+          vsl_embed_url?: string | null
+          vsl_enabled?: boolean
+          vsl_minutes_label?: number
+          vsl_subtitle?: string
+          vsl_title?: string
+        }
+        Relationships: []
+      }
       managers: {
         Row: {
           active: boolean
