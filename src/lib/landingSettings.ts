@@ -33,6 +33,17 @@ export interface LandingSettings {
   pricing_discount_label: string;
   currency_code: string;
   plans: Plan[];
+  // WhatsApp Sales
+  wa_sales_enabled: boolean;
+  wa_sales_phone: string | null;
+  wa_sales_cta_label: string;
+  wa_sales_message_template: string;
+  // WhatsApp Support
+  wa_support_enabled: boolean;
+  wa_support_phone: string | null;
+  wa_support_tooltip: string;
+  wa_support_message: string;
+  wa_support_position: string;
   updated_at: string;
 }
 
@@ -60,6 +71,15 @@ export const DEFAULT_LANDING_SETTINGS: LandingSettings = {
     { key: 'basic', name: 'Básico', tagline: 'Para começar', badge: null, enabled: true, monthly_price: 0, yearly_price: 0, features: ['1 negócio', 'Link de agendamento', 'Gestão de serviços', 'Confirmações'], cta_label: 'Começar' },
     { key: 'pro', name: 'Pro', tagline: 'Para crescer', badge: 'Popular', enabled: true, monthly_price: 1500, yearly_price: 14400, features: ['Tudo do Básico', 'Relatórios avançados', 'Suporte prioritário', 'Recursos Pro'], cta_label: 'Começar' },
   ],
+  wa_sales_enabled: true,
+  wa_sales_phone: null,
+  wa_sales_cta_label: 'Configurar meu negócio agora',
+  wa_sales_message_template: 'Olá! Quero configurar meu negócio no Agenda Smart. Vim pelo site. Pode me ajudar com a ativação e configuração?',
+  wa_support_enabled: true,
+  wa_support_phone: null,
+  wa_support_tooltip: 'Suporte no WhatsApp',
+  wa_support_message: 'Olá! Preciso de suporte no Agenda Smart.',
+  wa_support_position: 'bottom-right',
   updated_at: '',
 };
 

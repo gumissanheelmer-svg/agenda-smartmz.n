@@ -559,6 +559,15 @@ export type Database = {
           vsl_minutes_label: number
           vsl_subtitle: string
           vsl_title: string
+          wa_sales_cta_label: string
+          wa_sales_enabled: boolean
+          wa_sales_message_template: string
+          wa_sales_phone: string | null
+          wa_support_enabled: boolean
+          wa_support_message: string
+          wa_support_phone: string | null
+          wa_support_position: string
+          wa_support_tooltip: string
         }
         Insert: {
           currency_code?: string
@@ -582,6 +591,15 @@ export type Database = {
           vsl_minutes_label?: number
           vsl_subtitle?: string
           vsl_title?: string
+          wa_sales_cta_label?: string
+          wa_sales_enabled?: boolean
+          wa_sales_message_template?: string
+          wa_sales_phone?: string | null
+          wa_support_enabled?: boolean
+          wa_support_message?: string
+          wa_support_phone?: string | null
+          wa_support_position?: string
+          wa_support_tooltip?: string
         }
         Update: {
           currency_code?: string
@@ -605,6 +623,15 @@ export type Database = {
           vsl_minutes_label?: number
           vsl_subtitle?: string
           vsl_title?: string
+          wa_sales_cta_label?: string
+          wa_sales_enabled?: boolean
+          wa_sales_message_template?: string
+          wa_sales_phone?: string | null
+          wa_support_enabled?: boolean
+          wa_support_message?: string
+          wa_support_phone?: string | null
+          wa_support_position?: string
+          wa_support_tooltip?: string
         }
         Relationships: []
       }
