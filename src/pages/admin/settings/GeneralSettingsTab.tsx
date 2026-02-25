@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,8 +10,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import {
   Settings as SettingsIcon, MessageCircle, Upload, Trash2, ImageIcon,
-  CreditCard, Smartphone, AlertCircle
+  CreditCard, Smartphone, AlertCircle, Globe, Wand2
 } from 'lucide-react';
+import { ALL_BUSINESS_TYPES, getBusinessConfig, type BusinessType } from '@/lib/businessConfig';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_SIZE = 5 * 1024 * 1024;
@@ -26,12 +27,81 @@ export default function GeneralSettingsTab({ settings, setSettings, labels }: Ge
   const { toast } = useToast();
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [isApplyingTemplate, setIsApplyingTemplate] = useState(false);
+  const [countries, setCountries] = useState<any[]>([]);
   const logoInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    supabase.from('countries' as any).select('*').eq('is_enabled', true).order('name')
+      .then(({ data }) => { if (data) setCountries(data); });
+  }, []);
 
   const validateFile = (file: File): string | null => {
     if (!ALLOWED_TYPES.includes(file.type)) return 'No iPhone, envie JPG/PNG (HEIC não é suportado).';
     if (file.size > MAX_SIZE) return 'O tamanho máximo permitido é 5MB.';
     return null;
+  };
+
+  const handleApplyTemplate = async () => {
+    if (!settings) return;
+    setIsApplyingTemplate(true);
+    try {
+      const { data: existingServices } = await supabase
+        .from('services')
+        .select('id')
+        .eq('barbershop_id', settings.id)
+        .limit(1);
+
+      if (existingServices && existingServices.length > 0) {
+        toast({ title: 'Serviços já existem', description: 'O modelo só pode ser aplicado quando não há serviços cadastrados.', variant: 'destructive' });
+        setIsApplyingTemplate(false);
+        return;
+      }
+
+      const { data: templates } = await supabase
+        .from('business_templates' as any)
+        .select('template_services')
+        .eq('business_type', settings.business_type)
+        .eq('is_enabled', true)
+        .limit(1);
+
+      if (!templates || templates.length === 0) {
+        toast({ title: 'Sem modelo', description: 'Nenhum modelo disponível para este tipo de negócio.', variant: 'destructive' });
+        setIsApplyingTemplate(false);
+        return;
+      }
+
+      const templateServices = (templates[0] as any).template_services as any[];
+      
+      for (const svc of templateServices) {
+        await supabase.from('services').insert({
+          barbershop_id: settings.id,
+          name: svc.name,
+          price: svc.price || 0,
+          duration: svc.duration || 30,
+          active: true,
+        } as any);
+      }
+
+      toast({ title: 'Modelo aplicado!', description: `${templateServices.length} serviços criados com sucesso.` });
+    } catch (err: any) {
+      toast({ title: 'Erro', description: err?.message, variant: 'destructive' });
+    } finally {
+      setIsApplyingTemplate(false);
+    }
+  };
+
+  const handleCountryChange = (countryCode: string) => {
+    const country = countries.find((c: any) => c.country_code === countryCode);
+    if (country) {
+      setSettings({
+        ...settings,
+        country_code: countryCode,
+        currency_code: country.default_currency_code,
+        timezone: country.default_timezone,
+        locale: country.default_locale,
+      });
+    }
   };
 
   const handleLogoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,6 +198,43 @@ export default function GeneralSettingsTab({ settings, setSettings, labels }: Ge
                   placeholder={labels.slugPlaceholder}
                 />
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm sm:text-base">Tipo de Negócio</Label>
+              <Select value={settings.business_type || 'barbearia'} onValueChange={(v) => setSettings({ ...settings, business_type: v })}>
+                <SelectTrigger className="bg-input border-border"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {ALL_BUSINESS_TYPES.map(bt => (
+                    <SelectItem key={bt} value={bt}>{getBusinessConfig(bt).label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm sm:text-base">País</Label>
+              <Select value={settings.country_code || 'MZ'} onValueChange={handleCountryChange}>
+                <SelectTrigger className="bg-input border-border"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {countries.map((c: any) => (
+                    <SelectItem key={c.country_code} value={c.country_code}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">Moeda: {settings.currency_code || 'MZN'} • Fuso: {settings.timezone || 'Africa/Maputo'}</p>
+            </div>
+          </div>
+
+          {/* Apply Template */}
+          <div className="pt-2 border-t border-border/50">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-lg border border-border/50 bg-secondary/20">
+              <div className="space-y-0.5">
+                <p className="font-medium text-sm">Modelo de Serviços</p>
+                <p className="text-xs text-muted-foreground">Criar serviços padrão para {getBusinessConfig(settings.business_type || 'barbearia').label}.</p>
+              </div>
+              <Button variant="outline" size="sm" onClick={handleApplyTemplate} disabled={isApplyingTemplate} className="w-full sm:w-auto">
+                <Wand2 className="w-4 h-4 mr-2" />
+                {isApplyingTemplate ? 'Aplicando...' : 'Aplicar Modelo'}
+              </Button>
             </div>
           </div>
 
