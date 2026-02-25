@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { BarbershopProvider } from "@/hooks/useBarbershop";
 import { DynamicThemeProvider } from "@/components/DynamicThemeProvider";
 import BarbershopList from "./pages/BarbershopList";
+import AngolaLanding from "./pages/AngolaLanding";
 import BarbershopHome from "./pages/BarbershopHome";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -47,6 +48,7 @@ const App = () => (
                 <Routes>
                   {/* Public routes */}
                   <Route path="/" element={<BarbershopList />} />
+                  <Route path="/angola" element={<AngolaLanding />} />
                   <Route path="/b/:slug" element={<BarbershopHome />} />
                   
                   {/* Auth routes */}
