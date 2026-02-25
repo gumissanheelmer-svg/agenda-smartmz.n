@@ -12,6 +12,7 @@ import { HowItWorks } from '@/components/landing/HowItWorks';
 import { PricingSection } from '@/components/landing/PricingSection';
 import { FAQSection } from '@/components/landing/FAQSection';
 import { FinalCTA } from '@/components/landing/FinalCTA';
+import { WhatsAppFAB } from '@/components/landing/WhatsAppFAB';
 
 export default function BarbershopList() {
   return (
@@ -63,6 +64,9 @@ export default function BarbershopList() {
         <FAQSection />
         <FinalCTA />
       </main>
+
+      {/* WhatsApp floating support */}
+      <WhatsAppFAB />
 
       {/* Footer */}
       <motion.footer

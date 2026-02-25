@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Save, RotateCcw, Loader2 } from 'lucide-react';
+import { Save, RotateCcw, Loader2, ExternalLink } from 'lucide-react';
 
 const CURRENCIES = ['MZN', 'USD', 'ZAR', 'AOA', 'MWK', 'ZMW', 'TZS'];
 
@@ -57,12 +57,29 @@ export function LandingSettingsTab() {
         return;
       }
     }
+    // Validate phone numbers
+    const validatePhone = (phone: string | null, label: string) => {
+      if (!phone) return true;
+      const digits = phone.replace(/\D/g, '');
+      if (digits.length < 9 || digits.length > 15) {
+        toast({ title: 'Erro', description: `${label}: número deve ter 9-15 dígitos.`, variant: 'destructive' });
+        return false;
+      }
+      return true;
+    };
+    if (!validatePhone(settings.wa_sales_phone, 'WhatsApp Vendas')) return;
+    if (!validatePhone(settings.wa_support_phone, 'WhatsApp Suporte')) return;
+
+    // Clean phone numbers
+    const cleanPhone = (phone: string | null) => phone ? phone.replace(/[^0-9]/g, '') || null : null;
 
     setIsSaving(true);
     const { error } = await supabase
       .from('landing_settings')
       .update({
         ...settings,
+        wa_sales_phone: cleanPhone(settings.wa_sales_phone),
+        wa_support_phone: cleanPhone(settings.wa_support_phone),
         updated_at: new Date().toISOString(),
       } as any)
       .eq('site_key', 'agenda-smart');
@@ -232,6 +249,71 @@ export function LandingSettingsTab() {
           </CardContent>
         </Card>
       ))}
+
+      {/* WhatsApp Sales */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">WhatsApp — Vendas / Setup</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label>Ativar CTA WhatsApp no Hero</Label>
+            <Switch checked={settings.wa_sales_enabled} onCheckedChange={(v) => setSettings({ ...settings, wa_sales_enabled: v })} />
+          </div>
+          <div>
+            <Label>Número do WhatsApp (somente dígitos)</Label>
+            <Input value={settings.wa_sales_phone || ''} placeholder="258841234567" onChange={(e) => setSettings({ ...settings, wa_sales_phone: e.target.value || null })} />
+          </div>
+          <div>
+            <Label>Texto do botão (CTA)</Label>
+            <Input value={settings.wa_sales_cta_label} onChange={(e) => setSettings({ ...settings, wa_sales_cta_label: e.target.value })} />
+          </div>
+          <div>
+            <Label>Mensagem padrão</Label>
+            <Textarea value={settings.wa_sales_message_template} rows={3} onChange={(e) => setSettings({ ...settings, wa_sales_message_template: e.target.value })} />
+          </div>
+          {settings.wa_sales_phone && (
+            <Button variant="outline" size="sm" onClick={() => {
+              const digits = settings.wa_sales_phone!.replace(/\D/g, '');
+              const phone = digits.length === 9 ? '258' + digits : digits;
+              window.open(`https://wa.me/${phone}?text=${encodeURIComponent(settings.wa_sales_message_template)}`, '_blank');
+            }}>
+              <ExternalLink className="w-4 h-4 mr-2" /> Testar link
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* WhatsApp Support */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">WhatsApp — Suporte Flutuante</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label>Ativar botão flutuante</Label>
+            <Switch checked={settings.wa_support_enabled} onCheckedChange={(v) => setSettings({ ...settings, wa_support_enabled: v })} />
+          </div>
+          <div>
+            <Label>Número do suporte (vazio = usa o de vendas)</Label>
+            <Input value={settings.wa_support_phone || ''} placeholder="258841234567" onChange={(e) => setSettings({ ...settings, wa_support_phone: e.target.value || null })} />
+          </div>
+          <div>
+            <Label>Tooltip</Label>
+            <Input value={settings.wa_support_tooltip} onChange={(e) => setSettings({ ...settings, wa_support_tooltip: e.target.value })} />
+          </div>
+          <div>
+            <Label>Mensagem do suporte</Label>
+            <Textarea value={settings.wa_support_message} rows={2} onChange={(e) => setSettings({ ...settings, wa_support_message: e.target.value })} />
+          </div>
+          {(settings.wa_support_phone || settings.wa_sales_phone) && (
+            <Button variant="outline" size="sm" onClick={() => {
+              const raw = settings.wa_support_phone || settings.wa_sales_phone || '';
+              const digits = raw.replace(/\D/g, '');
+              const phone = digits.length === 9 ? '258' + digits : digits;
+              window.open(`https://wa.me/${phone}?text=${encodeURIComponent(settings.wa_support_message)}`, '_blank');
+            }}>
+              <ExternalLink className="w-4 h-4 mr-2" /> Testar link
+            </Button>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

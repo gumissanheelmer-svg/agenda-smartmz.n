@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Calendar, Shield, Zap } from 'lucide-react';
+import { ArrowRight, Calendar, Shield, Zap, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLandingSettings } from '@/hooks/useLandingSettings';
 
@@ -111,14 +111,30 @@ export function HeroSection() {
             variants={blurFadeUp}
             transition={{ duration: 0.7, delay: 0.6 }}
           >
-            <Link to="/register" className="w-full sm:w-auto">
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-                <Button variant="hero" size="xl" className="w-full sm:w-auto shadow-[0_0_30px_hsl(43_74%_49%_/_0.25)] hover:shadow-[0_0_50px_hsl(43_74%_49%_/_0.35)] transition-shadow duration-500">
-                  {settings.primary_cta_label}
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </motion.div>
-            </Link>
+            {settings.wa_sales_enabled && settings.wa_sales_phone ? (
+              <a
+                href={`https://wa.me/${settings.wa_sales_phone.replace(/\D/g, '').length === 9 ? '258' + settings.wa_sales_phone.replace(/\D/g, '') : settings.wa_sales_phone.replace(/\D/g, '')}?text=${encodeURIComponent(settings.wa_sales_message_template)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto"
+              >
+                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                  <Button variant="hero" size="xl" className="w-full sm:w-auto shadow-[0_0_30px_hsl(43_74%_49%_/_0.25)] hover:shadow-[0_0_50px_hsl(43_74%_49%_/_0.35)] transition-shadow duration-500">
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    {settings.wa_sales_cta_label}
+                  </Button>
+                </motion.div>
+              </a>
+            ) : (
+              <Link to="/register" className="w-full sm:w-auto">
+                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                  <Button variant="hero" size="xl" className="w-full sm:w-auto shadow-[0_0_30px_hsl(43_74%_49%_/_0.25)] hover:shadow-[0_0_50px_hsl(43_74%_49%_/_0.35)] transition-shadow duration-500">
+                    {settings.primary_cta_label}
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </motion.div>
+              </Link>
+            )}
             {settings.secondary_cta_enabled && (
               <Link to="/login" className="w-full sm:w-auto">
                 <Button variant="outline" size="xl" className="w-full sm:w-auto">
@@ -127,6 +143,17 @@ export function HeroSection() {
               </Link>
             )}
           </motion.div>
+
+          {settings.wa_sales_enabled && settings.wa_sales_phone && (
+            <motion.p
+              className="mt-3 text-sm text-muted-foreground/70"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
+            >
+              Atendimento pelo WhatsApp. Configuração em minutos.
+            </motion.p>
+          )}
 
           <motion.p
             className="mt-5 text-sm text-muted-foreground/70"
