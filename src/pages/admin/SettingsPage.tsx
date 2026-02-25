@@ -48,6 +48,12 @@ interface BarbershopSettings {
   media_featured_type: string | null;
   print_with_logo: boolean;
   owner_name: string | null;
+  country_code: string;
+  currency_code: string;
+  timezone: string;
+  locale: string;
+  business_settings: Record<string, any>;
+  brand_settings: Record<string, any>;
 }
 
 const getBusinessLabels = (type: string) => {
@@ -56,6 +62,10 @@ const getBusinessLabels = (type: string) => {
       return { businessName: 'Nome do Salão', businessLabel: 'Salão de Beleza', slugPlaceholder: 'meu-salao' };
     case 'salao_barbearia':
       return { businessName: 'Nome do Estabelecimento', businessLabel: 'Salão & Barbearia', slugPlaceholder: 'meu-estabelecimento' };
+    case 'estetica':
+      return { businessName: 'Nome do Estúdio', businessLabel: 'Estética', slugPlaceholder: 'minha-estetica' };
+    case 'tattoo_studio':
+      return { businessName: 'Nome do Estúdio', businessLabel: 'Estúdio de Tatuagem', slugPlaceholder: 'meu-estudio' };
     default:
       return { businessName: 'Nome da Barbearia', businessLabel: 'Barbearia', slugPlaceholder: 'minha-barbearia' };
   }
@@ -96,6 +106,12 @@ export default function SettingsPage() {
         gallery_videos: data.gallery_videos || [],
         background_overlay_level: (data.background_overlay_level || 'medium') as 'low' | 'medium' | 'high',
         payment_methods_enabled: data.payment_methods_enabled || [],
+        country_code: (data as any).country_code || 'MZ',
+        currency_code: (data as any).currency_code || 'MZN',
+        timezone: (data as any).timezone || 'Africa/Maputo',
+        locale: (data as any).locale || 'pt-MZ',
+        business_settings: (data as any).business_settings || {},
+        brand_settings: (data as any).brand_settings || {},
       } as BarbershopSettings);
     }
     setIsLoading(false);
@@ -141,7 +157,13 @@ export default function SettingsPage() {
         media_featured_type: settings.media_featured_type,
         print_with_logo: settings.print_with_logo,
         owner_name: settings.owner_name,
-      })
+        country_code: settings.country_code,
+        currency_code: settings.currency_code,
+        timezone: settings.timezone,
+        locale: settings.locale,
+        business_settings: settings.business_settings,
+        brand_settings: settings.brand_settings,
+      } as any)
       .eq('id', settings.id);
 
     if (error) {

@@ -301,17 +301,22 @@ export type Database = {
           background_color: string
           background_image_url: string | null
           background_overlay_level: string | null
+          brand_settings: Json
+          business_settings: Json
           business_type: string
           city: string | null
           cleanup_buffer_minutes: number
           closing_time: string | null
+          country_code: string
           cover_image_url: string | null
           created_at: string
+          currency_code: string
           emola_number: string | null
           gallery_images: string[] | null
           gallery_videos: string[] | null
           id: string
           latitude: number | null
+          locale: string
           location_name: string | null
           logo_url: string | null
           longitude: number | null
@@ -333,6 +338,7 @@ export type Database = {
           slot_interval_minutes: number
           slug: string
           text_color: string
+          timezone: string
           updated_at: string
           video_url: string | null
           whatsapp_number: string | null
@@ -344,17 +350,22 @@ export type Database = {
           background_color?: string
           background_image_url?: string | null
           background_overlay_level?: string | null
+          brand_settings?: Json
+          business_settings?: Json
           business_type?: string
           city?: string | null
           cleanup_buffer_minutes?: number
           closing_time?: string | null
+          country_code?: string
           cover_image_url?: string | null
           created_at?: string
+          currency_code?: string
           emola_number?: string | null
           gallery_images?: string[] | null
           gallery_videos?: string[] | null
           id?: string
           latitude?: number | null
+          locale?: string
           location_name?: string | null
           logo_url?: string | null
           longitude?: number | null
@@ -376,6 +387,7 @@ export type Database = {
           slot_interval_minutes?: number
           slug: string
           text_color?: string
+          timezone?: string
           updated_at?: string
           video_url?: string | null
           whatsapp_number?: string | null
@@ -387,17 +399,22 @@ export type Database = {
           background_color?: string
           background_image_url?: string | null
           background_overlay_level?: string | null
+          brand_settings?: Json
+          business_settings?: Json
           business_type?: string
           city?: string | null
           cleanup_buffer_minutes?: number
           closing_time?: string | null
+          country_code?: string
           cover_image_url?: string | null
           created_at?: string
+          currency_code?: string
           emola_number?: string | null
           gallery_images?: string[] | null
           gallery_videos?: string[] | null
           id?: string
           latitude?: number | null
+          locale?: string
           location_name?: string | null
           logo_url?: string | null
           longitude?: number | null
@@ -419,9 +436,70 @@ export type Database = {
           slot_interval_minutes?: number
           slug?: string
           text_color?: string
+          timezone?: string
           updated_at?: string
           video_url?: string | null
           whatsapp_number?: string | null
+        }
+        Relationships: []
+      }
+      business_templates: {
+        Row: {
+          business_type: string
+          created_at: string
+          id: string
+          is_enabled: boolean
+          locale: string
+          template_services: Json
+          template_settings: Json
+        }
+        Insert: {
+          business_type: string
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          locale?: string
+          template_services?: Json
+          template_settings?: Json
+        }
+        Update: {
+          business_type?: string
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          locale?: string
+          template_services?: Json
+          template_settings?: Json
+        }
+        Relationships: []
+      }
+      countries: {
+        Row: {
+          country_code: string
+          default_currency_code: string
+          default_locale: string
+          default_timezone: string
+          is_enabled: boolean
+          name: string
+          phone_country_prefix: string | null
+        }
+        Insert: {
+          country_code: string
+          default_currency_code: string
+          default_locale: string
+          default_timezone: string
+          is_enabled?: boolean
+          name: string
+          phone_country_prefix?: string | null
+        }
+        Update: {
+          country_code?: string
+          default_currency_code?: string
+          default_locale?: string
+          default_timezone?: string
+          is_enabled?: boolean
+          name?: string
+          phone_country_prefix?: string | null
         }
         Relationships: []
       }
@@ -859,33 +937,45 @@ export type Database = {
           active: boolean
           allowed_business_types: string[]
           barbershop_id: string | null
+          category: string | null
           created_at: string
+          deposit_amount: number | null
           duration: number
           id: string
           name: string
           price: number
+          requires_deposit: boolean
+          service_settings: Json
           updated_at: string
         }
         Insert: {
           active?: boolean
           allowed_business_types?: string[]
           barbershop_id?: string | null
+          category?: string | null
           created_at?: string
+          deposit_amount?: number | null
           duration?: number
           id?: string
           name: string
           price?: number
+          requires_deposit?: boolean
+          service_settings?: Json
           updated_at?: string
         }
         Update: {
           active?: boolean
           allowed_business_types?: string[]
           barbershop_id?: string | null
+          category?: string | null
           created_at?: string
+          deposit_amount?: number | null
           duration?: number
           id?: string
           name?: string
           price?: number
+          requires_deposit?: boolean
+          service_settings?: Json
           updated_at?: string
         }
         Relationships: [

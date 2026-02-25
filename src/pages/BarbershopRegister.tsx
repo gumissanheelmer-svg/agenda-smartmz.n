@@ -8,9 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Scissors, Upload, Eye, ArrowLeft, Loader2, Sparkles, Store } from 'lucide-react';
-
-type BusinessType = 'barbearia' | 'salao' | 'salao_barbearia';
+import { Scissors, Upload, Eye, ArrowLeft, Loader2, Sparkles, Store, Heart, PenTool } from 'lucide-react';
+import { ALL_BUSINESS_TYPES, getBusinessConfig, type BusinessType } from '@/lib/businessConfig';
 
 interface FormData {
   // Owner info
@@ -156,21 +155,18 @@ export default function BarbershopRegister() {
   };
 
   const getBusinessTypeLabel = () => {
-    switch (formData.businessType) {
-      case 'barbearia': return 'Barbearia';
-      case 'salao': return 'Salão de Beleza';
-      case 'salao_barbearia': return 'Salão & Barbearia';
-      default: return 'Estabelecimento';
-    }
+    return getBusinessConfig(formData.businessType).label;
   };
 
   const getBusinessTypeIcon = () => {
-    switch (formData.businessType) {
-      case 'barbearia': return <Scissors className="w-6 h-6" style={{ color: formData.backgroundColor }} />;
-      case 'salao': return <Sparkles className="w-6 h-6" style={{ color: formData.backgroundColor }} />;
-      case 'salao_barbearia': return <Store className="w-6 h-6" style={{ color: formData.backgroundColor }} />;
-      default: return <Scissors className="w-6 h-6" style={{ color: formData.backgroundColor }} />;
-    }
+    const iconMap: Record<string, React.ReactNode> = {
+      barbearia: <Scissors className="w-6 h-6" style={{ color: formData.backgroundColor }} />,
+      salao: <Sparkles className="w-6 h-6" style={{ color: formData.backgroundColor }} />,
+      salao_barbearia: <Store className="w-6 h-6" style={{ color: formData.backgroundColor }} />,
+      estetica: <Heart className="w-6 h-6" style={{ color: formData.backgroundColor }} />,
+      tattoo_studio: <PenTool className="w-6 h-6" style={{ color: formData.backgroundColor }} />,
+    };
+    return iconMap[formData.businessType] || iconMap.barbearia;
   };
 
   const handleSubmit = async () => {
@@ -575,63 +571,34 @@ export default function BarbershopRegister() {
                 <div className="space-y-3">
                   <Label>Tipo de estabelecimento *</Label>
                   <div className="grid grid-cols-1 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, businessType: 'barbearia' }))}
-                      className={`p-4 rounded-lg border-2 transition-all text-left flex items-center gap-3 ${
-                        formData.businessType === 'barbearia' 
-                          ? 'border-primary bg-primary/10' 
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                    >
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        formData.businessType === 'barbearia' ? 'bg-primary' : 'bg-muted'
-                      }`}>
-                        <Scissors className={`w-5 h-5 ${formData.businessType === 'barbearia' ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
-                      </div>
-                      <div>
-                        <p className="font-medium">Barbearia</p>
-                        <p className="text-xs text-muted-foreground">Cortes, barbas e tratamentos masculinos</p>
-                      </div>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, businessType: 'salao' }))}
-                      className={`p-4 rounded-lg border-2 transition-all text-left flex items-center gap-3 ${
-                        formData.businessType === 'salao' 
-                          ? 'border-primary bg-primary/10' 
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                    >
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        formData.businessType === 'salao' ? 'bg-primary' : 'bg-muted'
-                      }`}>
-                        <Sparkles className={`w-5 h-5 ${formData.businessType === 'salao' ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
-                      </div>
-                      <div>
-                        <p className="font-medium">Salão de Beleza</p>
-                        <p className="text-xs text-muted-foreground">Cabelo, manicure, maquiagem e mais</p>
-                      </div>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, businessType: 'salao_barbearia' }))}
-                      className={`p-4 rounded-lg border-2 transition-all text-left flex items-center gap-3 ${
-                        formData.businessType === 'salao_barbearia' 
-                          ? 'border-primary bg-primary/10' 
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                    >
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        formData.businessType === 'salao_barbearia' ? 'bg-primary' : 'bg-muted'
-                      }`}>
-                        <Store className={`w-5 h-5 ${formData.businessType === 'salao_barbearia' ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
-                      </div>
-                      <div>
-                        <p className="font-medium">Salão & Barbearia</p>
-                        <p className="text-xs text-muted-foreground">Serviços completos para todos</p>
-                      </div>
-                    </button>
+                    {([
+                      { type: 'barbearia' as BusinessType, icon: Scissors, desc: 'Cortes, barbas e tratamentos masculinos' },
+                      { type: 'salao' as BusinessType, icon: Sparkles, desc: 'Cabelo, manicure, maquiagem e mais' },
+                      { type: 'salao_barbearia' as BusinessType, icon: Store, desc: 'Serviços completos para todos' },
+                      { type: 'estetica' as BusinessType, icon: Heart, desc: 'Limpeza de pele, tratamentos faciais' },
+                      { type: 'tattoo_studio' as BusinessType, icon: PenTool, desc: 'Tatuagens, piercings e retoques' },
+                    ]).map(({ type, icon: Icon, desc }) => (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, businessType: type }))}
+                        className={`p-4 rounded-lg border-2 transition-all text-left flex items-center gap-3 ${
+                          formData.businessType === type
+                            ? 'border-primary bg-primary/10'
+                            : 'border-border hover:border-primary/50'
+                        }`}
+                      >
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          formData.businessType === type ? 'bg-primary' : 'bg-muted'
+                        }`}>
+                          <Icon className={`w-5 h-5 ${formData.businessType === type ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
+                        </div>
+                        <div>
+                          <p className="font-medium">{getBusinessConfig(type).label}</p>
+                          <p className="text-xs text-muted-foreground">{desc}</p>
+                        </div>
+                      </button>
+                    ))}
                   </div>
                 </div>
 

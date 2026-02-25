@@ -37,6 +37,12 @@ export interface Barbershop {
   gallery_videos: string[];
   media_featured_url: string | null;
   media_featured_type: string | null;
+  country_code: string;
+  currency_code: string;
+  timezone: string;
+  locale: string;
+  business_settings: Record<string, any>;
+  brand_settings: Record<string, any>;
 }
 
 interface BarbershopContextType {
@@ -118,6 +124,12 @@ export function BarbershopProvider({ children }: { children: ReactNode }) {
         gallery_videos: barbershopData.gallery_videos || [],
         media_featured_url: barbershopData.media_featured_url || null,
         media_featured_type: barbershopData.media_featured_type || null,
+        country_code: (barbershopData as any).country_code || 'MZ',
+        currency_code: (barbershopData as any).currency_code || 'MZN',
+        timezone: (barbershopData as any).timezone || 'Africa/Maputo',
+        locale: (barbershopData as any).locale || 'pt-MZ',
+        business_settings: (barbershopData as any).business_settings || {},
+        brand_settings: (barbershopData as any).brand_settings || {},
       } as Barbershop);
       setIsLoading(false);
       return true;
