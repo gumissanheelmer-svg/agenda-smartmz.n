@@ -7,7 +7,7 @@ import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, LayoutDashboard, Building2, CreditCard, LogOut, RefreshCw, Users, DollarSign, Globe } from 'lucide-react';
+import { Shield, LayoutDashboard, Building2, CreditCard, LogOut, RefreshCw, Users, DollarSign, Globe, Wand2 } from 'lucide-react';
 import { Zap } from 'lucide-react';
 import { DashboardTab } from '@/components/superadmin/DashboardTab';
 import { BusinessesTab } from '@/components/superadmin/BusinessesTab';
@@ -15,6 +15,8 @@ import { SubscriptionsTab } from '@/components/superadmin/SubscriptionsTab';
 import { AffiliatesTab } from '@/components/superadmin/AffiliatesTab';
 import { AffiliateSalesTab } from '@/components/superadmin/AffiliateSalesTab';
 import { LandingSettingsTab } from '@/components/superadmin/LandingSettingsTab';
+import { CountriesTab } from '@/components/superadmin/CountriesTab';
+import { TemplatesTab } from '@/components/superadmin/TemplatesTab';
 
 interface Barbershop {
   id: string;
@@ -331,32 +333,42 @@ export default function SuperAdminDashboard() {
 
         <main className="container mx-auto px-4 py-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full max-w-3xl grid-cols-6">
-              <TabsTrigger value="dashboard" className="flex items-center gap-2">
-                <LayoutDashboard className="h-4 w-4" />
-                <span className="hidden sm:inline">Dashboard</span>
-              </TabsTrigger>
-              <TabsTrigger value="businesses" className="flex items-center gap-2">
-                <Building2 className="h-4 w-4" />
-                <span className="hidden sm:inline">Empresas</span>
-              </TabsTrigger>
-              <TabsTrigger value="subscriptions" className="flex items-center gap-2">
-                <Zap className="h-4 w-4" />
-                <span className="hidden sm:inline">Ativações</span>
-              </TabsTrigger>
-              <TabsTrigger value="affiliates" className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                <span className="hidden sm:inline">Afiliados</span>
-              </TabsTrigger>
-              <TabsTrigger value="affiliate-sales" className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4" />
-                <span className="hidden sm:inline">Vendas</span>
-              </TabsTrigger>
-              <TabsTrigger value="landing" className="flex items-center gap-2">
-                <Globe className="h-4 w-4" />
-                <span className="hidden sm:inline">Landing</span>
-              </TabsTrigger>
-            </TabsList>
+            <div className="overflow-x-auto -mx-4 px-4">
+              <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:max-w-4xl sm:grid-cols-8">
+                <TabsTrigger value="dashboard" className="flex items-center gap-2">
+                  <LayoutDashboard className="h-4 w-4" />
+                  <span className="hidden sm:inline">Dashboard</span>
+                </TabsTrigger>
+                <TabsTrigger value="businesses" className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Empresas</span>
+                </TabsTrigger>
+                <TabsTrigger value="subscriptions" className="flex items-center gap-2">
+                  <Zap className="h-4 w-4" />
+                  <span className="hidden sm:inline">Ativações</span>
+                </TabsTrigger>
+                <TabsTrigger value="affiliates" className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  <span className="hidden sm:inline">Afiliados</span>
+                </TabsTrigger>
+                <TabsTrigger value="affiliate-sales" className="flex items-center gap-2">
+                  <DollarSign className="h-4 w-4" />
+                  <span className="hidden sm:inline">Vendas</span>
+                </TabsTrigger>
+                <TabsTrigger value="countries" className="flex items-center gap-2">
+                  <Globe className="h-4 w-4" />
+                  <span className="hidden sm:inline">Países</span>
+                </TabsTrigger>
+                <TabsTrigger value="templates" className="flex items-center gap-2">
+                  <Wand2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Templates</span>
+                </TabsTrigger>
+                <TabsTrigger value="landing" className="flex items-center gap-2">
+                  <Globe className="h-4 w-4" />
+                  <span className="hidden sm:inline">Landing</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             <TabsContent value="dashboard">
               <DashboardTab stats={stats} salesStats={salesStats} monthlyData={monthlyData} />
@@ -400,6 +412,14 @@ export default function SuperAdminDashboard() {
                 affiliatePerformance={affiliatePerformance}
                 onCreateSale={handleCreateAffiliateSale}
               />
+            </TabsContent>
+
+            <TabsContent value="countries">
+              <CountriesTab />
+            </TabsContent>
+
+            <TabsContent value="templates">
+              <TemplatesTab />
             </TabsContent>
 
             <TabsContent value="landing">
