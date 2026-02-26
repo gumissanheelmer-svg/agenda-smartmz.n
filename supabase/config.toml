@@ -2,3 +2,9 @@ project_id = "nbaabislgyqxmlfstwjw"
 
 [functions.create-manager]
 verify_jwt = false
+
+[functions.create-affiliate]
+verify_jwt = false
+
+[functions.reset-affiliate-password]
+verify_jwt = false

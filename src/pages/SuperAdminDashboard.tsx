@@ -399,6 +399,7 @@ export default function SuperAdminDashboard() {
                 onCreateAffiliate={handleCreateAffiliate}
                 onUpdateAffiliate={handleUpdateAffiliate}
                 onDeleteAffiliate={handleDeleteAffiliate}
+                onRefresh={fetchAllData}
               />
             </TabsContent>
 
