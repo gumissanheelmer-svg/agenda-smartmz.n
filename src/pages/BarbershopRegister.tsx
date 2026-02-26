@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,10 +7,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Scissors, Upload, Eye, ArrowLeft, Loader2, Sparkles, Store, Heart, PenTool } from 'lucide-react';
 import { ALL_BUSINESS_TYPES, getBusinessConfig, type BusinessType } from '@/lib/businessConfig';
 import { getReferralCode, clearReferralCode } from '@/hooks/useReferral';
+
+interface Country {
+  country_code: string;
+  name: string;
+  default_currency_code: string;
+  default_timezone: string;
+  default_locale: string;
+  phone_country_prefix: string | null;
+}
 
 interface FormData {
   // Owner info
@@ -23,6 +33,10 @@ interface FormData {
   slug: string;
   whatsappNumber: string;
   businessType: BusinessType;
+  countryCode: string;
+  currencyCode: string;
+  timezone: string;
+  locale: string;
   // Theme
   primaryColor: string;
   secondaryColor: string;
@@ -39,6 +53,7 @@ export default function BarbershopRegister() {
   const { refreshRoles } = useAuth();
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [countries, setCountries] = useState<Country[]>([]);
   const [formData, setFormData] = useState<FormData>({
     ownerName: '',
     ownerEmail: '',
@@ -48,6 +63,10 @@ export default function BarbershopRegister() {
     slug: '',
     whatsappNumber: '',
     businessType: 'barbearia',
+    countryCode: 'MZ',
+    currencyCode: 'MZN',
+    timezone: 'Africa/Maputo',
+    locale: 'pt-MZ',
     primaryColor: '#D4AF37',
     secondaryColor: '#1a1a2e',
     backgroundColor: '#0f0f1a',
@@ -55,6 +74,11 @@ export default function BarbershopRegister() {
     logoFile: null,
     logoPreview: null,
   });
+
+  useEffect(() => {
+    supabase.from('countries' as any).select('*').eq('is_enabled', true).order('name')
+      .then(({ data }) => { if (data) setCountries(data as unknown as Country[]); });
+  }, []);
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -355,6 +379,17 @@ export default function BarbershopRegister() {
         throw new Error('Falha ao criar barbearia: ' + shopError.message);
       }
 
+      // 4.1 Update country-specific fields (RPC doesn't support them)
+      await supabase
+        .from('barbershops')
+        .update({
+          country_code: formData.countryCode,
+          currency_code: formData.currencyCode,
+          timezone: formData.timezone,
+          locale: formData.locale,
+        } as any)
+        .eq('id', barbershopId);
+
       const barbershopData = { id: barbershopId };
 
       // 5. Assign admin role to user (upsert to handle existing role without barbershop_id)
@@ -628,6 +663,33 @@ export default function BarbershopRegister() {
                   </div>
                 </div>
 
+                {/* Country Selection */}
+                <div className="space-y-2">
+                  <Label>País *</Label>
+                  <Select value={formData.countryCode} onValueChange={(v) => {
+                    const country = countries.find(c => c.country_code === v);
+                    if (country) {
+                      setFormData(prev => ({
+                        ...prev,
+                        countryCode: v,
+                        currencyCode: country.default_currency_code,
+                        timezone: country.default_timezone,
+                        locale: country.default_locale,
+                      }));
+                    }
+                  }}>
+                    <SelectTrigger><SelectValue placeholder="Selecione o país" /></SelectTrigger>
+                    <SelectContent>
+                      {countries.map(c => (
+                        <SelectItem key={c.country_code} value={c.country_code}>{c.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Moeda: {formData.currencyCode} • Fuso: {formData.timezone}
+                  </p>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="name">Nome do estabelecimento *</Label>
                   <Input
@@ -656,7 +718,7 @@ export default function BarbershopRegister() {
                   <Label htmlFor="whatsappNumber">WhatsApp (opcional)</Label>
                   <Input
                     id="whatsappNumber"
-                    placeholder="+258 84 123 4567"
+                    placeholder={`${countries.find(c => c.country_code === formData.countryCode)?.phone_country_prefix || '+258'} 84 123 4567`}
                     value={formData.whatsappNumber}
                     onChange={(e) => handleInputChange('whatsappNumber', e.target.value)}
                   />
