@@ -14,13 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_commissions: {
+        Row: {
+          affiliate_id: string
+          amount_total: number
+          business_id: string
+          commission_amount: number
+          commission_currency: string
+          created_at: string
+          id: string
+          meta: Json
+          paid_at: string | null
+          plan_id: string | null
+          status: string
+        }
+        Insert: {
+          affiliate_id: string
+          amount_total?: number
+          business_id: string
+          commission_amount?: number
+          commission_currency?: string
+          created_at?: string
+          id?: string
+          meta?: Json
+          paid_at?: string | null
+          plan_id?: string | null
+          status?: string
+        }
+        Update: {
+          affiliate_id?: string
+          amount_total?: number
+          business_id?: string
+          commission_amount?: number
+          commission_currency?: string
+          created_at?: string
+          id?: string
+          meta?: Json
+          paid_at?: string | null
+          plan_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_commissions_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates_agenda"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_commissions_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "barbershops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_referrals: {
         Row: {
           affiliate_id: string
           business_id: string
           commission_amount: number
+          country_code: string | null
           created_at: string
           id: string
+          lead_name: string | null
+          lead_phone: string | null
+          notes: string | null
           status: string
           updated_at: string
         }
@@ -28,8 +89,12 @@ export type Database = {
           affiliate_id: string
           business_id: string
           commission_amount?: number
+          country_code?: string | null
           created_at?: string
           id?: string
+          lead_name?: string | null
+          lead_phone?: string | null
+          notes?: string | null
           status?: string
           updated_at?: string
         }
@@ -37,8 +102,12 @@ export type Database = {
           affiliate_id?: string
           business_id?: string
           commission_amount?: number
+          country_code?: string | null
           created_at?: string
           id?: string
+          lead_name?: string | null
+          lead_phone?: string | null
+          notes?: string | null
           status?: string
           updated_at?: string
         }
@@ -110,10 +179,14 @@ export type Database = {
           commission_fixed: number
           commission_percentage: number
           created_at: string
+          created_by_superadmin: string | null
+          email: string | null
           id: string
+          last_login_at: string | null
           name: string
           phone: string | null
           referral_code: string | null
+          status: string
           total_earnings: number
           updated_at: string
           user_id: string | null
@@ -123,10 +196,14 @@ export type Database = {
           commission_fixed?: number
           commission_percentage?: number
           created_at?: string
+          created_by_superadmin?: string | null
+          email?: string | null
           id?: string
+          last_login_at?: string | null
           name: string
           phone?: string | null
           referral_code?: string | null
+          status?: string
           total_earnings?: number
           updated_at?: string
           user_id?: string | null
@@ -136,10 +213,14 @@ export type Database = {
           commission_fixed?: number
           commission_percentage?: number
           created_at?: string
+          created_by_superadmin?: string | null
+          email?: string | null
           id?: string
+          last_login_at?: string | null
           name?: string
           phone?: string | null
           referral_code?: string | null
+          status?: string
           total_earnings?: number
           updated_at?: string
           user_id?: string | null
