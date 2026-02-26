@@ -14,7 +14,7 @@ type LoginState = 'form' | 'pending' | 'manager_pending' | 'unauthorized';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { signIn, user, isSuperAdmin, isAdmin, isManager, isActiveManager, isBarber, isApprovedBarber, barbershopInfo, isLoading } = useAuth();
+  const { signIn, user, isSuperAdmin, isAdmin, isManager, isActiveManager, isBarber, isApprovedBarber, isAffiliate, barbershopInfo, isLoading } = useAuth();
   const { toast } = useToast();
   
   const [email, setEmail] = useState('');
@@ -83,11 +83,17 @@ export default function Login() {
         setLoginState('pending');
         return;
       }
+
+      // Affiliate
+      if (isAffiliate) {
+        navigate('/affiliate');
+        return;
+      }
       
-      // User exists but is neither admin nor barber
+      // User exists but is neither admin nor barber nor affiliate
       setLoginState('unauthorized');
     }
-  }, [user, isSuperAdmin, isAdmin, isManager, isActiveManager, isBarber, isApprovedBarber, barbershopInfo, isLoading, isCheckingRoles, navigate]);
+  }, [user, isSuperAdmin, isAdmin, isManager, isActiveManager, isBarber, isApprovedBarber, isAffiliate, barbershopInfo, isLoading, isCheckingRoles, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

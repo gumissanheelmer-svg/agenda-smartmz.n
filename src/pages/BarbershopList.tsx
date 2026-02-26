@@ -13,8 +13,11 @@ import { PricingSection } from '@/components/landing/PricingSection';
 import { FAQSection } from '@/components/landing/FAQSection';
 import { FinalCTA } from '@/components/landing/FinalCTA';
 import { WhatsAppFAB } from '@/components/landing/WhatsAppFAB';
+import { useReferral } from '@/hooks/useReferral';
 
 export default function BarbershopList() {
+  // Capture ?ref=CODE from URL into localStorage
+  useReferral();
   return (
     <div className="min-h-screen bg-background overflow-hidden relative">
       <Helmet>

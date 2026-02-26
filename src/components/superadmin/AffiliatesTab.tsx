@@ -16,6 +16,10 @@ interface Affiliate {
   name: string;
   phone: string | null;
   commission_fixed: number;
+  commission_percentage?: number;
+  referral_code?: string | null;
+  user_id?: string | null;
+  total_earnings?: number;
   active: boolean;
   created_at: string;
   salesCount?: number;
@@ -24,8 +28,8 @@ interface Affiliate {
 
 interface AffiliatesTabProps {
   affiliates: Affiliate[];
-  onCreateAffiliate: (data: { name: string; phone?: string; commission_fixed: number }) => Promise<void>;
-  onUpdateAffiliate: (id: string, data: { name?: string; phone?: string; commission_fixed?: number; active?: boolean }) => Promise<void>;
+  onCreateAffiliate: (data: { name: string; phone?: string; commission_fixed: number; referral_code?: string; commission_percentage?: number }) => Promise<void>;
+  onUpdateAffiliate: (id: string, data: { name?: string; phone?: string; commission_fixed?: number; active?: boolean; referral_code?: string; commission_percentage?: number }) => Promise<void>;
   onDeleteAffiliate: (id: string) => Promise<void>;
 }
 
@@ -52,10 +56,12 @@ export function AffiliatesTab({ affiliates, onCreateAffiliate, onUpdateAffiliate
     name: '',
     phone: '',
     commission_fixed: 0,
+    commission_percentage: 30,
+    referral_code: '',
   });
 
   const resetForm = () => {
-    setFormData({ name: '', phone: '', commission_fixed: 0 });
+    setFormData({ name: '', phone: '', commission_fixed: 0, commission_percentage: 30, referral_code: '' });
   };
 
   const handleCreate = async () => {
@@ -70,6 +76,8 @@ export function AffiliatesTab({ affiliates, onCreateAffiliate, onUpdateAffiliate
         name: formData.name.trim(),
         phone: formData.phone.trim() || undefined,
         commission_fixed: formData.commission_fixed,
+        commission_percentage: formData.commission_percentage,
+        referral_code: formData.referral_code.trim() || undefined,
       });
       toast({ title: 'Sucesso', description: 'Afiliado criado com sucesso' });
       setIsCreating(false);
@@ -88,6 +96,8 @@ export function AffiliatesTab({ affiliates, onCreateAffiliate, onUpdateAffiliate
         name: formData.name.trim(),
         phone: formData.phone.trim() || undefined,
         commission_fixed: formData.commission_fixed,
+        commission_percentage: formData.commission_percentage,
+        referral_code: formData.referral_code.trim() || undefined,
       });
       toast({ title: 'Sucesso', description: 'Afiliado atualizado com sucesso' });
       setIsEditing(null);
@@ -127,6 +137,8 @@ export function AffiliatesTab({ affiliates, onCreateAffiliate, onUpdateAffiliate
       name: affiliate.name,
       phone: affiliate.phone || '',
       commission_fixed: affiliate.commission_fixed,
+      commission_percentage: affiliate.commission_percentage || 30,
+      referral_code: affiliate.referral_code || '',
     });
     setIsEditing(affiliate.id);
   };
@@ -217,8 +229,10 @@ export function AffiliatesTab({ affiliates, onCreateAffiliate, onUpdateAffiliate
               <TableHeader>
                 <TableRow>
                   <TableHead>Nome</TableHead>
+                  <TableHead>Código</TableHead>
                   <TableHead>Telefone</TableHead>
                   <TableHead className="text-right">Comissão Fixa</TableHead>
+                  <TableHead className="text-right">%</TableHead>
                   <TableHead className="text-right">Vendas</TableHead>
                   <TableHead className="text-right">Total Comissões</TableHead>
                   <TableHead className="text-center">Status</TableHead>
@@ -228,7 +242,7 @@ export function AffiliatesTab({ affiliates, onCreateAffiliate, onUpdateAffiliate
               <TableBody>
                 {affiliates.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={9} className="text-center text-muted-foreground py-8">
                       Nenhum afiliado cadastrado
                     </TableCell>
                   </TableRow>
@@ -236,6 +250,13 @@ export function AffiliatesTab({ affiliates, onCreateAffiliate, onUpdateAffiliate
                   affiliates.map((affiliate) => (
                     <TableRow key={affiliate.id}>
                       <TableCell className="font-medium">{affiliate.name}</TableCell>
+                      <TableCell>
+                        {affiliate.referral_code ? (
+                          <code className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono">{affiliate.referral_code}</code>
+                        ) : (
+                          <span className="text-muted-foreground text-xs">—</span>
+                        )}
+                      </TableCell>
                       <TableCell>
                         {affiliate.phone ? (
                           <span className="flex items-center gap-1">
@@ -247,6 +268,7 @@ export function AffiliatesTab({ affiliates, onCreateAffiliate, onUpdateAffiliate
                         )}
                       </TableCell>
                       <TableCell className="text-right">{affiliate.commission_fixed.toLocaleString('pt-BR')} MT</TableCell>
+                      <TableCell className="text-right">{affiliate.commission_percentage || 30}%</TableCell>
                       <TableCell className="text-right">{affiliate.salesCount || 0}</TableCell>
                       <TableCell className="text-right">{(affiliate.totalCommission || 0).toLocaleString('pt-BR')} MT</TableCell>
                       <TableCell className="text-center">
@@ -325,6 +347,28 @@ export function AffiliatesTab({ affiliates, onCreateAffiliate, onUpdateAffiliate
                 placeholder="0"
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="percentage">Comissão Percentual (%)</Label>
+              <Input
+                id="percentage"
+                type="number"
+                min="0"
+                max="100"
+                value={formData.commission_percentage}
+                onChange={(e) => setFormData({ ...formData, commission_percentage: Number(e.target.value) })}
+                placeholder="30"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="referral_code">Código de Indicação</Label>
+              <Input
+                id="referral_code"
+                value={formData.referral_code}
+                onChange={(e) => setFormData({ ...formData, referral_code: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
+                placeholder="ex: joao-silva"
+              />
+              <p className="text-xs text-muted-foreground">Código único usado no link de indicação. Apenas letras, números e hífens.</p>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsCreating(false)}>Cancelar</Button>
@@ -371,6 +415,27 @@ export function AffiliatesTab({ affiliates, onCreateAffiliate, onUpdateAffiliate
                 value={formData.commission_fixed}
                 onChange={(e) => setFormData({ ...formData, commission_fixed: Number(e.target.value) })}
                 placeholder="0"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-percentage">Comissão Percentual (%)</Label>
+              <Input
+                id="edit-percentage"
+                type="number"
+                min="0"
+                max="100"
+                value={formData.commission_percentage}
+                onChange={(e) => setFormData({ ...formData, commission_percentage: Number(e.target.value) })}
+                placeholder="30"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-referral_code">Código de Indicação</Label>
+              <Input
+                id="edit-referral_code"
+                value={formData.referral_code}
+                onChange={(e) => setFormData({ ...formData, referral_code: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
+                placeholder="ex: joao-silva"
               />
             </div>
           </div>

@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Scissors, Upload, Eye, ArrowLeft, Loader2, Sparkles, Store, Heart, PenTool } from 'lucide-react';
 import { ALL_BUSINESS_TYPES, getBusinessConfig, type BusinessType } from '@/lib/businessConfig';
+import { getReferralCode, clearReferralCode } from '@/hooks/useReferral';
 
 interface FormData {
   // Owner info
@@ -387,6 +388,31 @@ export default function BarbershopRegister() {
           id: userId,
           email: formData.ownerEmail,
         });
+      }
+
+      // 7. Track referral if exists
+      const refCode = getReferralCode();
+      if (refCode && barbershopData.id) {
+        try {
+          const { data: affiliateData } = await supabase
+            .from('affiliates_agenda')
+            .select('id')
+            .eq('referral_code', refCode)
+            .eq('active', true)
+            .maybeSingle();
+
+          if (affiliateData) {
+            await supabase.from('affiliate_referrals').insert({
+              affiliate_id: affiliateData.id,
+              business_id: barbershopData.id,
+              status: 'lead',
+              commission_amount: 0,
+            });
+            clearReferralCode();
+          }
+        } catch (refErr) {
+          console.error('Referral tracking error:', refErr);
+        }
       }
 
       toast({

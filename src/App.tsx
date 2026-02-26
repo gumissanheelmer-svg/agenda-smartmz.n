@@ -9,6 +9,7 @@ import { BarbershopProvider } from "@/hooks/useBarbershop";
 import { DynamicThemeProvider } from "@/components/DynamicThemeProvider";
 import BarbershopList from "./pages/BarbershopList";
 import AngolaLanding from "./pages/AngolaLanding";
+import AffiliateDashboard from "./pages/AffiliateDashboard";
 import BarbershopHome from "./pages/BarbershopHome";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -63,6 +64,9 @@ const App = () => (
                   
                   {/* Super Admin routes */}
                   <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
+                  
+                  {/* Affiliate routes */}
+                  <Route path="/affiliate" element={<AffiliateDashboard />} />
                   
                   {/* Admin routes */}
                   <Route path="/admin/dashboard" element={<AdminDashboard />}>
