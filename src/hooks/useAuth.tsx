@@ -34,6 +34,7 @@ interface AuthContextType {
   managerInfo: ManagerInfo | null;
   isBarber: boolean;
   isApprovedBarber: boolean;
+  isAffiliate: boolean;
   barberAccount: BarberAccountInfo | null;
   barbershopId: string | null;
   barbershopInfo: BarbershopInfo | null;
@@ -56,6 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [managerInfo, setManagerInfo] = useState<ManagerInfo | null>(null);
   const [isBarber, setIsBarber] = useState(false);
   const [isApprovedBarber, setIsApprovedBarber] = useState(false);
+  const [isAffiliate, setIsAffiliate] = useState(false);
   const [barberAccount, setBarberAccount] = useState<BarberAccountInfo | null>(null);
   const [barbershopId, setBarbershopId] = useState<string | null>(null);
   const [barbershopInfo, setBarbershopInfo] = useState<BarbershopInfo | null>(null);
@@ -97,6 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setManagerInfo(null);
     setIsBarber(false);
     setIsApprovedBarber(false);
+    setIsAffiliate(false);
     setBarberAccount(null);
     setBarbershopId(null);
     setBarbershopInfo(null);
@@ -121,6 +124,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Check for admin role and get barbershop_id
       const adminRole = rolesData?.find(r => r.role === 'admin');
       setIsAdmin(!!adminRole);
+
+      // Check for affiliate role
+      const affiliateRole = rolesData?.find(r => r.role === 'affiliate');
+      setIsAffiliate(!!affiliateRole);
 
       // Check for manager role and get barbershop_id
       const managerRole = rolesData?.find(r => r.role === 'manager');
@@ -259,7 +266,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isActiveManager,
       managerInfo,
       isBarber, 
-      isApprovedBarber, 
+      isApprovedBarber,
+      isAffiliate,
       barberAccount,
       barbershopId,
       barbershopInfo,

@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_referrals: {
+        Row: {
+          affiliate_id: string
+          business_id: string
+          commission_amount: number
+          created_at: string
+          id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          affiliate_id: string
+          business_id: string
+          commission_amount?: number
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          affiliate_id?: string
+          business_id?: string
+          commission_amount?: number
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_referrals_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates_agenda"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_referrals_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "barbershops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_sales_agenda: {
         Row: {
           affiliate_id: string
@@ -63,29 +108,41 @@ export type Database = {
         Row: {
           active: boolean
           commission_fixed: number
+          commission_percentage: number
           created_at: string
           id: string
           name: string
           phone: string | null
+          referral_code: string | null
+          total_earnings: number
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           active?: boolean
           commission_fixed?: number
+          commission_percentage?: number
           created_at?: string
           id?: string
           name: string
           phone?: string | null
+          referral_code?: string | null
+          total_earnings?: number
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           active?: boolean
           commission_fixed?: number
+          commission_percentage?: number
           created_at?: string
           id?: string
           name?: string
           phone?: string | null
+          referral_code?: string | null
+          total_earnings?: number
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1426,6 +1483,7 @@ export type Database = {
         Args: { _barbershop_id: string; _user_id: string }
         Returns: boolean
       }
+      is_affiliate: { Args: { _user_id: string }; Returns: boolean }
       is_approved_barber: { Args: { _user_id: string }; Returns: boolean }
       is_barbershop_admin: {
         Args: { _barbershop_id: string; _user_id: string }
@@ -1469,7 +1527,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "barber" | "superadmin" | "manager"
+      app_role: "admin" | "barber" | "superadmin" | "manager" | "affiliate"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1597,7 +1655,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "barber", "superadmin", "manager"],
+      app_role: ["admin", "barber", "superadmin", "manager", "affiliate"],
     },
   },
 } as const

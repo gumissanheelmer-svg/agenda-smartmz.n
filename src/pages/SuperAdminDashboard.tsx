@@ -47,6 +47,10 @@ interface Affiliate {
   name: string;
   phone: string | null;
   commission_fixed: number;
+  commission_percentage?: number;
+  referral_code?: string | null;
+  user_id?: string | null;
+  total_earnings?: number;
   active: boolean;
   created_at: string;
   salesCount?: number;
@@ -252,13 +256,13 @@ export default function SuperAdminDashboard() {
   };
 
   // Affiliate handlers
-  const handleCreateAffiliate = async (data: { name: string; phone?: string; commission_fixed: number }) => {
+  const handleCreateAffiliate = async (data: { name: string; phone?: string; commission_fixed: number; referral_code?: string; commission_percentage?: number }) => {
     const { error } = await supabase.from('affiliates_agenda').insert([data]);
     if (error) throw error;
     fetchAllData();
   };
 
-  const handleUpdateAffiliate = async (id: string, data: { name?: string; phone?: string; commission_fixed?: number; active?: boolean }) => {
+  const handleUpdateAffiliate = async (id: string, data: { name?: string; phone?: string; commission_fixed?: number; active?: boolean; referral_code?: string; commission_percentage?: number }) => {
     const { error } = await supabase.from('affiliates_agenda').update(data).eq('id', id);
     if (error) throw error;
     fetchAllData();
