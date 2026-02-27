@@ -67,30 +67,25 @@ export default function BarbershopList() {
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
         <Logo size="sm" />
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Link to="/login">
+            <Button variant="ghost" size="sm" className="rounded-full border border-white/20 text-white/80 hover:bg-white/5 hover:text-white bg-transparent px-4 sm:px-5 h-9 text-sm transition-all duration-300">
+              Acessar
+            </Button>
+          </Link>
           {waEnabled ? (
-            <a
-              href={buildWhatsAppLink(waPhone!, waMessage)}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button variant="ghost" size="sm" className="text-foreground hover:text-foreground hover:shadow-[0_0_16px_hsl(43_74%_49%_/_0.25)] transition-all duration-300">
-                <MessageCircle className="w-4 h-4 mr-1.5" />
-                🚀 Quero Minha Agenda Pronta
+            <a href={buildWhatsAppLink(waPhone!, waMessage)} target="_blank" rel="noopener noreferrer">
+              <Button size="sm" className="rounded-full bg-[#F4A261] text-[hsl(20,14%,4%)] hover:bg-[#FFC107] shadow-md px-4 sm:px-5 h-9 text-sm font-semibold transition-all duration-300">
+                Adquirir
               </Button>
             </a>
           ) : (
             <Link to="/register">
-              <Button variant="ghost" size="sm" className="text-foreground hover:text-foreground hover:shadow-[0_0_16px_hsl(43_74%_49%_/_0.25)] transition-all duration-300">
-                🚀 Quero Minha Agenda Pronta
+              <Button size="sm" className="rounded-full bg-[#F4A261] text-[hsl(20,14%,4%)] hover:bg-[#FFC107] shadow-md px-4 sm:px-5 h-9 text-sm font-semibold transition-all duration-300">
+                Adquirir
               </Button>
             </Link>
           )}
-          <Link to="/login">
-            <Button variant="default" size="sm" className="shadow-[0_0_20px_hsl(43_74%_49%_/_0.2)]">
-              Entrar
-            </Button>
-          </Link>
         </div>
       </motion.header>
 
