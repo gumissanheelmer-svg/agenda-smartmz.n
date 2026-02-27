@@ -75,13 +75,13 @@ export default function BarbershopList() {
           </Link>
           {waEnabled ? (
             <a href={buildWhatsAppLink(waPhone!, waMessage)} target="_blank" rel="noopener noreferrer">
-              <Button size="sm" className="rounded-full bg-[#F4A261] text-[hsl(20,14%,4%)] hover:bg-[#FFC107] shadow-md px-4 sm:px-5 h-9 text-sm font-semibold transition-all duration-300">
+              <Button size="sm" className="rounded-full bg-gradient-to-br from-[hsl(43,74%,49%)] to-[hsl(35,80%,45%)] text-[hsl(20,14%,4%)] hover:opacity-90 shadow-[0_4px_24px_-4px_hsl(43_74%_49%_/_0.3)] hover:shadow-lg px-4 sm:px-5 h-9 text-sm font-semibold transition-all duration-300">
                 Adquirir
               </Button>
             </a>
           ) : (
             <Link to="/register">
-              <Button size="sm" className="rounded-full bg-[#F4A261] text-[hsl(20,14%,4%)] hover:bg-[#FFC107] shadow-md px-4 sm:px-5 h-9 text-sm font-semibold transition-all duration-300">
+              <Button size="sm" className="rounded-full bg-gradient-to-br from-[hsl(43,74%,49%)] to-[hsl(35,80%,45%)] text-[hsl(20,14%,4%)] hover:opacity-90 shadow-[0_4px_24px_-4px_hsl(43_74%_49%_/_0.3)] hover:shadow-lg px-4 sm:px-5 h-9 text-sm font-semibold transition-all duration-300">
                 Adquirir
               </Button>
             </Link>
