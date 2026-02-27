@@ -121,8 +121,7 @@ export function HeroSection() {
               >
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
                   <Button variant="hero" size="xl" className="w-full sm:w-auto shadow-[0_0_30px_hsl(43_74%_49%_/_0.25)] hover:shadow-[0_0_50px_hsl(43_74%_49%_/_0.35)] transition-shadow duration-500">
-                    <MessageCircle className="w-5 h-5 mr-2" />
-                    Quero Minha Agenda Configurada
+                    🚀 Quero Meu Negócio Automatizado
                   </Button>
                 </motion.div>
               </a>
@@ -130,7 +129,7 @@ export function HeroSection() {
               <Link to="/register" className="w-full sm:w-auto">
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
                   <Button variant="hero" size="xl" className="w-full sm:w-auto shadow-[0_0_30px_hsl(43_74%_49%_/_0.25)] hover:shadow-[0_0_50px_hsl(43_74%_49%_/_0.35)] transition-shadow duration-500">
-                    Quero Minha Agenda Configurada
+                    🚀 Quero Meu Negócio Automatizado
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </motion.div>
@@ -162,7 +161,7 @@ export function HeroSection() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.8 }}
             >
-              Configuramos tudo por si. Só precisa nos chamar no WhatsApp.
+              Configuramos tudo para você. Só precisa enviar seus dados.
             </motion.p>
           )}
 
