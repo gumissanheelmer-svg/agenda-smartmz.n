@@ -74,15 +74,15 @@ export default function BarbershopList() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground transition-colors duration-300">
+              <Button variant="ghost" size="sm" className="text-foreground hover:text-foreground hover:shadow-[0_0_16px_hsl(43_74%_49%_/_0.25)] transition-all duration-300">
                 <MessageCircle className="w-4 h-4 mr-1.5" />
-                Configurar Meu Negócio
+                🚀 Quero Minha Agenda Pronta
               </Button>
             </a>
           ) : (
             <Link to="/register">
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground transition-colors duration-300">
-                Configurar Meu Negócio
+              <Button variant="ghost" size="sm" className="text-foreground hover:text-foreground hover:shadow-[0_0_16px_hsl(43_74%_49%_/_0.25)] transition-all duration-300">
+                🚀 Quero Minha Agenda Pronta
               </Button>
             </Link>
           )}
