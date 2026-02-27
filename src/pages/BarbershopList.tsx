@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
+import { MessageCircle } from 'lucide-react';
 
 import { HeroSection } from '@/components/landing/HeroSection';
 import { StatsRow } from '@/components/landing/StatsRow';
@@ -14,10 +15,34 @@ import { FAQSection } from '@/components/landing/FAQSection';
 import { FinalCTA } from '@/components/landing/FinalCTA';
 import { WhatsAppFAB } from '@/components/landing/WhatsAppFAB';
 import { useReferral } from '@/hooks/useReferral';
+import { useLandingSettings } from '@/hooks/useLandingSettings';
+
+const DEFAULT_WA_MESSAGE = `Olá! Quero que vocês configurem o meu negócio no Agenda Smart.
+
+Nome do negócio:
+Cidade/País:
+Tipo de negócio (Barbearia/Salão/Estética/Tatuagem):
+Meu WhatsApp:`;
+
+function buildWhatsAppLink(phone: string, message: string): string {
+  const digits = phone.replace(/\D/g, '');
+  const normalized = digits.length === 9 ? '258' + digits : digits;
+  const isMobile = typeof window !== 'undefined' &&
+    (window.innerWidth < 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
+  const encoded = encodeURIComponent(message);
+  return isMobile
+    ? `https://wa.me/${normalized}?text=${encoded}`
+    : `https://web.whatsapp.com/send?phone=${normalized}&text=${encoded}`;
+}
 
 export default function BarbershopList() {
-  // Capture ?ref=CODE from URL into localStorage
   useReferral();
+  const { settings } = useLandingSettings();
+
+  const waPhone = settings.wa_sales_phone;
+  const waMessage = settings.wa_sales_message_template || DEFAULT_WA_MESSAGE;
+  const waEnabled = settings.wa_sales_enabled && !!waPhone;
+
   return (
     <div className="min-h-screen bg-background overflow-hidden relative">
       <Helmet>
@@ -43,11 +68,24 @@ export default function BarbershopList() {
       >
         <Logo size="sm" />
         <div className="flex items-center gap-3">
-          <Link to="/register">
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground transition-colors duration-300">
-              Configurar Meu Negócio
-            </Button>
-          </Link>
+          {waEnabled ? (
+            <a
+              href={buildWhatsAppLink(waPhone!, waMessage)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground transition-colors duration-300">
+                <MessageCircle className="w-4 h-4 mr-1.5" />
+                Configurar Meu Negócio
+              </Button>
+            </a>
+          ) : (
+            <Link to="/register">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground transition-colors duration-300">
+                Configurar Meu Negócio
+              </Button>
+            </Link>
+          )}
           <Link to="/login">
             <Button variant="default" size="sm" className="shadow-[0_0_20px_hsl(43_74%_49%_/_0.2)]">
               Entrar
