@@ -105,12 +105,13 @@ export function HeroSection() {
           </motion.p>
 
           <motion.div
-            className="mt-10 flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
+            className="mt-10 flex flex-col items-center gap-4 w-full sm:w-auto"
             initial="hidden"
             animate="visible"
             variants={blurFadeUp}
             transition={{ duration: 0.7, delay: 0.6 }}
           >
+            {/* Primary CTA — always WhatsApp assisted setup */}
             {settings.wa_sales_enabled && settings.wa_sales_phone ? (
               <a
                 href={`https://wa.me/${settings.wa_sales_phone.replace(/\D/g, '').length === 9 ? '258' + settings.wa_sales_phone.replace(/\D/g, '') : settings.wa_sales_phone.replace(/\D/g, '')}?text=${encodeURIComponent(settings.wa_sales_message_template)}`}
@@ -121,7 +122,7 @@ export function HeroSection() {
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
                   <Button variant="hero" size="xl" className="w-full sm:w-auto shadow-[0_0_30px_hsl(43_74%_49%_/_0.25)] hover:shadow-[0_0_50px_hsl(43_74%_49%_/_0.35)] transition-shadow duration-500">
                     <MessageCircle className="w-5 h-5 mr-2" />
-                    {settings.wa_sales_cta_label}
+                    Quero Minha Agenda Configurada
                   </Button>
                 </motion.div>
               </a>
@@ -129,19 +130,29 @@ export function HeroSection() {
               <Link to="/register" className="w-full sm:w-auto">
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
                   <Button variant="hero" size="xl" className="w-full sm:w-auto shadow-[0_0_30px_hsl(43_74%_49%_/_0.25)] hover:shadow-[0_0_50px_hsl(43_74%_49%_/_0.35)] transition-shadow duration-500">
-                    {settings.primary_cta_label}
+                    Quero Minha Agenda Configurada
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </motion.div>
               </Link>
             )}
-            {settings.secondary_cta_enabled && (
-              <Link to="/login" className="w-full sm:w-auto">
-                <Button variant="outline" size="xl" className="w-full sm:w-auto">
-                  {settings.secondary_cta_label}
+
+            {/* Secondary row: manual + login */}
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <Link to="/register">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground text-sm">
+                  Criar Conta Manualmente
+                  <ArrowRight className="w-3.5 h-3.5 ml-1" />
                 </Button>
               </Link>
-            )}
+              {settings.secondary_cta_enabled && (
+                <Link to="/login">
+                  <Button variant="outline" size="sm" className="text-sm">
+                    {settings.secondary_cta_label}
+                  </Button>
+                </Link>
+              )}
+            </div>
           </motion.div>
 
           {settings.wa_sales_enabled && settings.wa_sales_phone && (
@@ -151,7 +162,7 @@ export function HeroSection() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.8 }}
             >
-              Atendimento pelo WhatsApp. Configuração em minutos.
+              Configuramos tudo por si. Só precisa nos chamar no WhatsApp.
             </motion.p>
           )}
 
