@@ -379,6 +379,7 @@ export default function SuperAdminDashboard() {
                 barbershops={barbershops}
                 onStatusChange={handleStatusChange}
                 onViewSubscriptions={(b) => { setSelectedBarbershop(b); setActiveTab("subscriptions"); }}
+                onRefresh={fetchAllData}
               />
             </TabsContent>
 

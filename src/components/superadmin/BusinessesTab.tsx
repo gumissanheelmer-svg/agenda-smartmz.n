@@ -25,8 +25,10 @@ import {
   PowerOff,
   Search,
   ExternalLink,
-  Zap
+  Zap,
+  Plus
 } from "lucide-react";
+import { CreateBusinessDialog } from "./CreateBusinessDialog";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -52,6 +54,7 @@ interface BusinessesTabProps {
   barbershops: Barbershop[];
   onStatusChange: (id: string, status: string, active?: boolean) => Promise<void>;
   onViewSubscriptions: (barbershop: Barbershop) => void;
+  onRefresh?: () => void;
 }
 
 const container = {
@@ -67,9 +70,10 @@ const item = {
   show: { opacity: 1, y: 0 },
 };
 
-export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions }: BusinessesTabProps) {
+export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions, onRefresh }: BusinessesTabProps) {
   const [filter, setFilter] = useState<FilterStatus>("all");
   const [search, setSearch] = useState("");
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     barbershop: Barbershop | null;
@@ -213,7 +217,7 @@ export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions
 
   return (
     <div className="space-y-4">
-      {/* Search and Filters */}
+      {/* Search, Filters and Create */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -224,19 +228,23 @@ export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions
             className="pl-10"
           />
         </div>
-        <div className="flex flex-wrap gap-2">
-          {filterButtons.map((btn) => (
-            <Button
-              key={btn.value}
-              variant={filter === btn.value ? "default" : "outline"}
-              size="sm"
-              onClick={() => setFilter(btn.value)}
-              className="text-xs"
-            >
-              {btn.label} ({btn.count})
-            </Button>
-          ))}
-        </div>
+        <Button onClick={() => setCreateDialogOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Criar Negócio
+        </Button>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {filterButtons.map((btn) => (
+          <Button
+            key={btn.value}
+            variant={filter === btn.value ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilter(btn.value)}
+            className="text-xs"
+          >
+            {btn.label} ({btn.count})
+          </Button>
+        ))}
       </div>
 
       {/* List */}
@@ -359,6 +367,12 @@ export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <CreateBusinessDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        onCreated={() => onRefresh?.()}
+      />
     </div>
   );
 }
