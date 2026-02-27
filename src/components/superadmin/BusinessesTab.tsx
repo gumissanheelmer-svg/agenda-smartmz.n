@@ -72,6 +72,7 @@ const item = {
 export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions }: BusinessesTabProps) {
   const [filter, setFilter] = useState<FilterStatus>("all");
   const [search, setSearch] = useState("");
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     barbershop: Barbershop | null;
