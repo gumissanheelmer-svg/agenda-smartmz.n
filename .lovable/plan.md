@@ -1,25 +1,26 @@
 
+# Atualizar FinalCTA para redirecionar ao WhatsApp
 
-## Exibir nome completo do proprietario na saudacao
+## O que muda
 
-**Problema atual**: O codigo em `SmartSummary.tsx` usa `.split(' ')[0]` para extrair apenas o primeiro nome do `owner_name`. Se o proprietario digitou "Elmer Diamntino", aparece apenas "Elmer".
+O botao "Comecar Agora -- E Gratis" na secao final da landing (FinalCTA) sera atualizado para:
 
-**Solucao**: Remover o `.split(' ')[0]` e usar o valor completo de `owner_name` tal como foi digitado nas configuracoes. Assim, se a pessoa escreveu um nome, aparece um nome; se escreveu dois, aparecem dois.
+1. **Texto**: "Quero Meu Negocio Automatizado" (igual ao Hero)
+2. **Acao**: Ao clicar, abre o WhatsApp com a mensagem configurada no SuperAdmin (mesmo comportamento do botao do Hero)
+3. **Fallback**: Se o WhatsApp nao estiver configurado, redireciona para `/register`
 
-**Exemplo**:
-- owner_name = "Afonso" → "Bem-vindo, Afonso"
-- owner_name = "Elmer Diamntino" → "Bem-vindo, Elmer Diamntino"
+## Alteracoes tecnicas
 
----
+### Arquivo: `src/components/landing/FinalCTA.tsx`
 
-### Detalhes tecnicos
+- Importar `useLandingSettings` para obter `wa_sales_phone`, `wa_sales_message_template` e `wa_sales_enabled`
+- Reutilizar a funcao `buildWhatsAppLink` de `BarbershopList.tsx` (ou extrair para utils) para gerar o link correto (wa.me no mobile, web.whatsapp.com no desktop)
+- Substituir o `<Link to="/register">` por `<a href={waLink}>` quando WhatsApp estiver ativo
+- Manter fallback para `/register` quando desativado
+- Texto do botao: "Quero Meu Negocio Automatizado"
 
-**Arquivo**: `src/components/admin/SmartSummary.tsx`
+### Refatoracao menor
 
-Alterar duas linhas onde `.split(' ')[0]` e usado:
+- Extrair `buildWhatsAppLink` para `src/lib/whatsapp.ts` (ja existe o arquivo com helpers de WhatsApp) para evitar duplicacao entre `BarbershopList.tsx` e `FinalCTA.tsx`
 
-- Linha 35: `ownerName = shopData.owner_name.split(' ')[0]` → `ownerName = shopData.owner_name`
-- Linha 43: `ownerName = accountData?.name?.split(' ')[0] || ''` → `ownerName = accountData?.name || ''`
-
-Nenhuma outra alteracao necessaria. O campo "Nome do Proprietario" nas configuracoes ja aceita qualquer texto, entao o utilizador controla quantos nomes aparecem.
-
+Nenhuma mudanca de layout, design ou rotas existentes.
