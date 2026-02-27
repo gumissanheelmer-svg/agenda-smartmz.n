@@ -54,6 +54,7 @@ interface BusinessesTabProps {
   barbershops: Barbershop[];
   onStatusChange: (id: string, status: string, active?: boolean) => Promise<void>;
   onViewSubscriptions: (barbershop: Barbershop) => void;
+  onRefresh?: () => void;
 }
 
 const container = {
@@ -69,7 +70,7 @@ const item = {
   show: { opacity: 1, y: 0 },
 };
 
-export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions }: BusinessesTabProps) {
+export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions, onRefresh }: BusinessesTabProps) {
   const [filter, setFilter] = useState<FilterStatus>("all");
   const [search, setSearch] = useState("");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -366,6 +367,12 @@ export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <CreateBusinessDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        onCreated={() => onRefresh?.()}
+      />
     </div>
   );
 }
