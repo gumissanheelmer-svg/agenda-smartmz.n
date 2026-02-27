@@ -25,8 +25,10 @@ import {
   PowerOff,
   Search,
   ExternalLink,
-  Zap
+  Zap,
+  Plus
 } from "lucide-react";
+import { CreateBusinessDialog } from "./CreateBusinessDialog";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
