@@ -45,3 +45,19 @@ export function openWhatsApp(phone: string, message: string): boolean {
   window.open(url, '_blank', 'noopener,noreferrer');
   return true;
 }
+
+/**
+ * Builds a WhatsApp link that is device-aware:
+ * - Mobile → wa.me
+ * - Desktop → web.whatsapp.com/send
+ */
+export function buildWhatsAppLink(phone: string, message: string): string {
+  const digits = phone.replace(/\D/g, '');
+  const normalized = digits.length === 9 ? '258' + digits : digits;
+  const isMobile = typeof window !== 'undefined' &&
+    (window.innerWidth < 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
+  const encoded = encodeURIComponent(message);
+  return isMobile
+    ? `https://wa.me/${normalized}?text=${encoded}`
+    : `https://web.whatsapp.com/send?phone=${normalized}&text=${encoded}`;
+}

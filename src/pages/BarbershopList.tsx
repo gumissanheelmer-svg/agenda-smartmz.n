@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import { MessageCircle } from 'lucide-react';
+import { buildWhatsAppLink } from '@/lib/whatsapp';
 
 import { HeroSection } from '@/components/landing/HeroSection';
 import { StatsRow } from '@/components/landing/StatsRow';
@@ -23,17 +24,6 @@ Nome do negócio:
 Cidade/País:
 Tipo de negócio (Barbearia/Salão/Estética/Tatuagem):
 Meu WhatsApp:`;
-
-function buildWhatsAppLink(phone: string, message: string): string {
-  const digits = phone.replace(/\D/g, '');
-  const normalized = digits.length === 9 ? '258' + digits : digits;
-  const isMobile = typeof window !== 'undefined' &&
-    (window.innerWidth < 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
-  const encoded = encodeURIComponent(message);
-  return isMobile
-    ? `https://wa.me/${normalized}?text=${encoded}`
-    : `https://web.whatsapp.com/send?phone=${normalized}&text=${encoded}`;
-}
 
 export default function BarbershopList() {
   useReferral();
