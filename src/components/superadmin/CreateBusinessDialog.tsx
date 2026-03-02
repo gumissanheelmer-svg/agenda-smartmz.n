@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { ALL_BUSINESS_TYPES, BUSINESS_TYPE_CONFIG } from "@/lib/businessConfig";
 
 interface Affiliate {
   id: string;
@@ -199,11 +200,11 @@ export function CreateBusinessDialog({ open, onOpenChange, onCreated }: CreateBu
               <Select value={businessType} onValueChange={setBusinessType}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="barbearia">Barbearia</SelectItem>
-                  <SelectItem value="salao">Salão</SelectItem>
-                  <SelectItem value="salao_barbearia">Salão & Barbearia</SelectItem>
-                  <SelectItem value="estetica">Estética</SelectItem>
-                  <SelectItem value="tattoo">Tattoo Studio</SelectItem>
+                  {ALL_BUSINESS_TYPES.map(bt => (
+                    <SelectItem key={bt} value={bt}>
+                      {BUSINESS_TYPE_CONFIG[bt].label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
