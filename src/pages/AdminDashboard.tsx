@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useAdminBarbershop } from '@/hooks/useAdminBarbershop';
 import { Logo } from '@/components/Logo';
 import { SmartSummary } from '@/components/admin/SmartSummary';
+import { NotificationBell } from '@/components/admin/NotificationBell';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -233,10 +234,7 @@ export default function AdminDashboard() {
               </SheetContent>
             </Sheet>
             <Logo size="sm" />
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground relative">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[hsl(var(--dashboard-accent))]" />
-            </Button>
+            <NotificationBell />
           </header>
         )}
 
@@ -290,10 +288,7 @@ export default function AdminDashboard() {
                   <Plus className="w-4 h-4 mr-1" />
                   Novo Agendamento
                 </Button>
-                <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground rounded-xl">
-                  <Bell className="w-5 h-5" />
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[hsl(var(--dashboard-accent))] animate-pulse" />
-                </Button>
+                <NotificationBell />
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[hsl(var(--dashboard-accent))] to-[hsl(var(--dashboard-accent))]/60 flex items-center justify-center text-white text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity">
                   {user?.email?.charAt(0).toUpperCase() || 'A'}
                 </div>

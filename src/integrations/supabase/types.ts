@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_notifications: {
+        Row: {
+          appointment_id: string | null
+          barbershop_id: string
+          body: string
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          read: boolean
+          title: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          barbershop_id: string
+          body: string
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          read?: boolean
+          title: string
+        }
+        Update: {
+          appointment_id?: string | null
+          barbershop_id?: string
+          body?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          read?: boolean
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_notifications_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_notifications_barbershop_id_fkey"
+            columns: ["barbershop_id"]
+            isOneToOne: false
+            referencedRelation: "barbershops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_commissions: {
         Row: {
           affiliate_id: string
@@ -818,6 +869,38 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_events: {
+        Row: {
+          appointment_id: string
+          channel: string
+          event_type: string
+          id: string
+          sent_at: string
+        }
+        Insert: {
+          appointment_id: string
+          channel?: string
+          event_type: string
+          id?: string
+          sent_at?: string
+        }
+        Update: {
+          appointment_id?: string
+          channel?: string
+          event_type?: string
+          id?: string
+          sent_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_events_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_confirmations: {
         Row: {
           amount_detected: number | null
@@ -1354,6 +1437,17 @@ export type Database = {
           p_slug: string
           p_text_color?: string
           p_whatsapp_number?: string
+        }
+        Returns: string
+      }
+      create_owner_notification: {
+        Args: {
+          p_appointment_id: string
+          p_barbershop_id: string
+          p_body: string
+          p_event_type: string
+          p_metadata?: Json
+          p_title: string
         }
         Returns: string
       }
