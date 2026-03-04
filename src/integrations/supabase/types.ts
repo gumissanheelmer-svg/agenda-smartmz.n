@@ -467,6 +467,7 @@ export type Database = {
           opening_time: string | null
           owner_email: string | null
           owner_name: string | null
+          payment_methods: Json | null
           payment_methods_enabled: string[] | null
           payment_required: boolean
           prep_buffer_minutes: number
@@ -516,6 +517,7 @@ export type Database = {
           opening_time?: string | null
           owner_email?: string | null
           owner_name?: string | null
+          payment_methods?: Json | null
           payment_methods_enabled?: string[] | null
           payment_required?: boolean
           prep_buffer_minutes?: number
@@ -565,6 +567,7 @@ export type Database = {
           opening_time?: string | null
           owner_email?: string | null
           owner_name?: string | null
+          payment_methods?: Json | null
           payment_methods_enabled?: string[] | null
           payment_required?: boolean
           prep_buffer_minutes?: number
@@ -822,11 +825,17 @@ export type Database = {
           appointment_id: string
           barbershop_id: string
           confirmation_text: string
+          confirmed_at: string | null
+          confirmed_by: string | null
+          country: string | null
           created_at: string
           id: string
+          method_id: string | null
+          payer_phone: string | null
           payment_method: string
           phone_detected: string | null
           phone_expected: string | null
+          raw_text: string | null
           reject_reason: string | null
           status: string
           transaction_code: string
@@ -837,11 +846,17 @@ export type Database = {
           appointment_id: string
           barbershop_id: string
           confirmation_text: string
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          country?: string | null
           created_at?: string
           id?: string
+          method_id?: string | null
+          payer_phone?: string | null
           payment_method: string
           phone_detected?: string | null
           phone_expected?: string | null
+          raw_text?: string | null
           reject_reason?: string | null
           status?: string
           transaction_code: string
@@ -852,11 +867,17 @@ export type Database = {
           appointment_id?: string
           barbershop_id?: string
           confirmation_text?: string
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          country?: string | null
           created_at?: string
           id?: string
+          method_id?: string | null
+          payer_phone?: string | null
           payment_method?: string
           phone_detected?: string | null
           phone_expected?: string | null
+          raw_text?: string | null
           reject_reason?: string | null
           status?: string
           transaction_code?: string
@@ -865,7 +886,7 @@ export type Database = {
           {
             foreignKeyName: "payment_confirmations_appointment_id_fkey"
             columns: ["appointment_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "appointments"
             referencedColumns: ["id"]
           },
@@ -1309,6 +1330,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_confirm_payment: {
+        Args: { p_confirmation_id: string }
+        Returns: Json
+      }
+      admin_reject_payment: {
+        Args: { p_confirmation_id: string; p_reason?: string }
+        Returns: Json
+      }
       can_view_client_data: {
         Args: { p_appointment_id: string }
         Returns: boolean
@@ -1342,6 +1371,10 @@ export type Database = {
         Returns: Json
       }
       current_user_barbershop_id: { Args: never; Returns: string }
+      extract_payment_code: {
+        Args: { p_code_rules?: Json; p_raw_text: string }
+        Returns: string
+      }
       get_appointment_stats_for_barbershop: {
         Args: { p_barbershop_id: string; p_date?: string }
         Returns: {
@@ -1589,6 +1622,20 @@ export type Database = {
       is_superadmin: { Args: { _user_id: string }; Returns: boolean }
       rpc_update_appointment_status: {
         Args: { p_appointment_id: string; p_new_status: string }
+        Returns: Json
+      }
+      submit_payment_confirmation: {
+        Args: {
+          p_amount: number
+          p_appointment_id: string
+          p_barbershop_id: string
+          p_code_rules?: Json
+          p_country: string
+          p_method_id: string
+          p_method_label: string
+          p_payer_phone: string
+          p_raw_text: string
+        }
         Returns: Json
       }
       validate_and_confirm_payment: {
