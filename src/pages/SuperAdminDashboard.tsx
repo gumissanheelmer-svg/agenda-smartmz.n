@@ -7,7 +7,7 @@ import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, LayoutDashboard, Building2, CreditCard, LogOut, RefreshCw, Users, DollarSign, Globe, Wand2 } from 'lucide-react';
+import { Shield, LayoutDashboard, Building2, CreditCard, LogOut, RefreshCw, Users, DollarSign, Globe, Wand2, MessageSquare } from 'lucide-react';
 import { Zap } from 'lucide-react';
 import { DashboardTab } from '@/components/superadmin/DashboardTab';
 import { BusinessesTab } from '@/components/superadmin/BusinessesTab';
@@ -17,6 +17,7 @@ import { AffiliateSalesTab } from '@/components/superadmin/AffiliateSalesTab';
 import { LandingSettingsTab } from '@/components/superadmin/LandingSettingsTab';
 import { CountriesTab } from '@/components/superadmin/CountriesTab';
 import { TemplatesTab } from '@/components/superadmin/TemplatesTab';
+import { WhatsAppCampaignsTab } from '@/components/superadmin/WhatsAppCampaignsTab';
 
 interface Barbershop {
   id: string;
@@ -349,7 +350,7 @@ export default function SuperAdminDashboard() {
         <main className="container mx-auto px-4 py-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <div className="overflow-x-auto -mx-4 px-4">
-              <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:max-w-4xl sm:grid-cols-8">
+              <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:max-w-5xl sm:grid-cols-9">
                 <TabsTrigger value="dashboard" className="flex items-center gap-2">
                   <LayoutDashboard className="h-4 w-4" />
                   <span className="hidden sm:inline">Dashboard</span>
@@ -369,6 +370,10 @@ export default function SuperAdminDashboard() {
                 <TabsTrigger value="affiliate-sales" className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4" />
                   <span className="hidden sm:inline">Vendas</span>
+                </TabsTrigger>
+                <TabsTrigger value="whatsapp-campaigns" className="flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4" />
+                  <span className="hidden sm:inline">WhatsApp</span>
                 </TabsTrigger>
                 <TabsTrigger value="countries" className="flex items-center gap-2">
                   <Globe className="h-4 w-4" />
@@ -434,6 +439,10 @@ export default function SuperAdminDashboard() {
 
             <TabsContent value="countries">
               <CountriesTab />
+            </TabsContent>
+
+            <TabsContent value="whatsapp-campaigns">
+              <WhatsAppCampaignsTab />
             </TabsContent>
 
             <TabsContent value="templates">
