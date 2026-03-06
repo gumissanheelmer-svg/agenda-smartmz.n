@@ -104,10 +104,11 @@ export default function SuperAdminDashboard() {
   const fetchAllData = async () => {
     setIsDataLoading(true);
     try {
-      // Fetch barbershops
+      // Fetch barbershops (exclude soft-deleted)
       const { data: barbershopsData, error: barbershopsError } = await supabase
         .from('barbershops')
         .select('*')
+        .is('deleted_at', null)
         .order('created_at', { ascending: false });
 
       if (barbershopsError) throw barbershopsError;
@@ -282,6 +283,20 @@ export default function SuperAdminDashboard() {
     fetchAllData();
   };
 
+  const handleDeleteBusiness = async (id: string) => {
+    const { error } = await supabase
+      .from('barbershops')
+      .update({ deleted_at: new Date().toISOString(), active: false })
+      .eq('id', id);
+
+    if (error) {
+      toast({ title: 'Erro', description: 'Não foi possível excluir o negócio.', variant: 'destructive' });
+      throw error;
+    }
+    toast({ title: 'Sucesso', description: 'Negócio excluído com sucesso.' });
+    fetchAllData();
+  };
+
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
@@ -380,6 +395,7 @@ export default function SuperAdminDashboard() {
                 onStatusChange={handleStatusChange}
                 onViewSubscriptions={(b) => { setSelectedBarbershop(b); setActiveTab("subscriptions"); }}
                 onRefresh={fetchAllData}
+                onDelete={handleDeleteBusiness}
               />
             </TabsContent>
 
