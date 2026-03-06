@@ -350,7 +350,7 @@ export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions
                         <Trash2 className="h-4 w-4 mr-1" />
                         Excluir
                       </Button>
-                  </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
