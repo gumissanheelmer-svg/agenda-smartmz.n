@@ -350,7 +350,7 @@ export default function SuperAdminDashboard() {
         <main className="container mx-auto px-4 py-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <div className="overflow-x-auto -mx-4 px-4">
-              <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:max-w-4xl sm:grid-cols-8">
+              <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:max-w-5xl sm:grid-cols-9">
                 <TabsTrigger value="dashboard" className="flex items-center gap-2">
                   <LayoutDashboard className="h-4 w-4" />
                   <span className="hidden sm:inline">Dashboard</span>
@@ -370,6 +370,10 @@ export default function SuperAdminDashboard() {
                 <TabsTrigger value="affiliate-sales" className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4" />
                   <span className="hidden sm:inline">Vendas</span>
+                </TabsTrigger>
+                <TabsTrigger value="whatsapp-campaigns" className="flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4" />
+                  <span className="hidden sm:inline">WhatsApp</span>
                 </TabsTrigger>
                 <TabsTrigger value="countries" className="flex items-center gap-2">
                   <Globe className="h-4 w-4" />
