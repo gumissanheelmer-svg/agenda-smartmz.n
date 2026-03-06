@@ -500,6 +500,7 @@ export type Database = {
           cover_image_url: string | null
           created_at: string
           currency_code: string
+          deleted_at: string | null
           emola_number: string | null
           gallery_images: string[] | null
           gallery_videos: string[] | null
@@ -550,6 +551,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string
           currency_code?: string
+          deleted_at?: string | null
           emola_number?: string | null
           gallery_images?: string[] | null
           gallery_videos?: string[] | null
@@ -600,6 +602,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string
           currency_code?: string
+          deleted_at?: string | null
           emola_number?: string | null
           gallery_images?: string[] | null
           gallery_videos?: string[] | null
