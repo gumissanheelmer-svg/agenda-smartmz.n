@@ -441,6 +441,10 @@ export default function SuperAdminDashboard() {
               <CountriesTab />
             </TabsContent>
 
+            <TabsContent value="whatsapp-campaigns">
+              <WhatsAppCampaignsTab />
+            </TabsContent>
+
             <TabsContent value="templates">
               <TemplatesTab />
             </TabsContent>
