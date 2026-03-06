@@ -1411,6 +1411,192 @@ export type Database = {
           },
         ]
       }
+      whatsapp_campaign_messages: {
+        Row: {
+          campaign_id: string
+          contact_id: string
+          error_message: string | null
+          id: string
+          message_text: string
+          phone: string
+          response_at: string | null
+          sent_at: string | null
+          status: string
+          template_id: string | null
+        }
+        Insert: {
+          campaign_id: string
+          contact_id: string
+          error_message?: string | null
+          id?: string
+          message_text: string
+          phone: string
+          response_at?: string | null
+          sent_at?: string | null
+          status?: string
+          template_id?: string | null
+        }
+        Update: {
+          campaign_id?: string
+          contact_id?: string
+          error_message?: string | null
+          id?: string
+          message_text?: string
+          phone?: string
+          response_at?: string | null
+          sent_at?: string | null
+          status?: string
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_campaign_messages_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_campaign_messages_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_campaign_messages_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_campaigns: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          freeform_message: string | null
+          id: string
+          scheduled_at: string | null
+          send_mode: string
+          status: string
+          target_filter: Json
+          template_id: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          freeform_message?: string | null
+          id?: string
+          scheduled_at?: string | null
+          send_mode?: string
+          status?: string
+          target_filter?: Json
+          template_id?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          freeform_message?: string | null
+          id?: string
+          scheduled_at?: string | null
+          send_mode?: string
+          status?: string
+          target_filter?: Json
+          template_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_campaigns_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_contacts: {
+        Row: {
+          country_code: string | null
+          created_at: string
+          id: string
+          language: string
+          last_inbound_at: string | null
+          name: string | null
+          niche: string | null
+          notes: string | null
+          opt_in: boolean
+          phone: string
+          source: string | null
+          status: string
+        }
+        Insert: {
+          country_code?: string | null
+          created_at?: string
+          id?: string
+          language?: string
+          last_inbound_at?: string | null
+          name?: string | null
+          niche?: string | null
+          notes?: string | null
+          opt_in?: boolean
+          phone: string
+          source?: string | null
+          status?: string
+        }
+        Update: {
+          country_code?: string | null
+          created_at?: string
+          id?: string
+          language?: string
+          last_inbound_at?: string | null
+          name?: string | null
+          niche?: string | null
+          notes?: string | null
+          opt_in?: boolean
+          phone?: string
+          source?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      whatsapp_templates: {
+        Row: {
+          active: boolean
+          body: string
+          category: string
+          created_at: string
+          id: string
+          is_approved: boolean
+          language: string
+          name: string
+        }
+        Insert: {
+          active?: boolean
+          body: string
+          category: string
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          language: string
+          name: string
+        }
+        Update: {
+          active?: boolean
+          body?: string
+          category?: string
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          language?: string
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
