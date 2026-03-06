@@ -26,7 +26,8 @@ import {
   Search,
   ExternalLink,
   Zap,
-  Plus
+  Plus,
+  Trash2
 } from "lucide-react";
 import { CreateBusinessDialog } from "./CreateBusinessDialog";
 import { format } from "date-fns";
@@ -48,13 +49,14 @@ interface Barbershop {
 }
 
 type FilterStatus = "all" | "pending" | "approved" | "blocked" | "rejected" | "inactive";
-type ActionType = "approve" | "reject" | "block" | "unblock" | "deactivate" | "activate";
+type ActionType = "approve" | "reject" | "block" | "unblock" | "deactivate" | "activate" | "delete";
 
 interface BusinessesTabProps {
   barbershops: Barbershop[];
   onStatusChange: (id: string, status: string, active?: boolean) => Promise<void>;
   onViewSubscriptions: (barbershop: Barbershop) => void;
   onRefresh?: () => void;
+  onDelete?: (id: string) => Promise<void>;
 }
 
 const container = {
@@ -70,7 +72,7 @@ const item = {
   show: { opacity: 1, y: 0 },
 };
 
-export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions, onRefresh }: BusinessesTabProps) {
+export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions, onRefresh, onDelete }: BusinessesTabProps) {
   const [filter, setFilter] = useState<FilterStatus>("all");
   const [search, setSearch] = useState("");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -123,6 +125,7 @@ export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions
       unblock: "desbloquear",
       deactivate: "desativar",
       activate: "ativar",
+      delete: "excluir",
     };
     return texts[action];
   };
@@ -153,6 +156,9 @@ export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions
           break;
         case "activate":
           await onStatusChange(id, approval_status, true);
+          break;
+        case "delete":
+          if (onDelete) await onDelete(id);
           break;
       }
     } finally {
@@ -334,6 +340,20 @@ export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions
                       <ExternalLink className="h-4 w-4 mr-1" />
                       Ver
                     </Button>
+                    {onDelete && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => setConfirmDialog({ open: true, barbershop, action: "delete" })}
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Excluir
+                      </Button>
+                    )}
+                      <ExternalLink className="h-4 w-4 mr-1" />
+                      Ver
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -355,8 +375,10 @@ export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar ação</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja {confirmDialog.action && getActionText(confirmDialog.action)} a empresa{" "}
-              <strong>{confirmDialog.barbershop?.name}</strong>?
+              {confirmDialog.action === "delete" 
+                ? <>Tem certeza que deseja excluir o negócio <strong>{confirmDialog.barbershop?.name}</strong>? Esta ação não pode ser desfeita.</>
+                : <>Tem certeza que deseja {confirmDialog.action && getActionText(confirmDialog.action)} a empresa <strong>{confirmDialog.barbershop?.name}</strong>?</>
+              }
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
