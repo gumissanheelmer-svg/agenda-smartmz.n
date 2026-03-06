@@ -7,7 +7,7 @@ import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, LayoutDashboard, Building2, CreditCard, LogOut, RefreshCw, Users, DollarSign, Globe, Wand2 } from 'lucide-react';
+import { Shield, LayoutDashboard, Building2, CreditCard, LogOut, RefreshCw, Users, DollarSign, Globe, Wand2, MessageSquare } from 'lucide-react';
 import { Zap } from 'lucide-react';
 import { DashboardTab } from '@/components/superadmin/DashboardTab';
 import { BusinessesTab } from '@/components/superadmin/BusinessesTab';
