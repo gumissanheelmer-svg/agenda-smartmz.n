@@ -310,6 +310,7 @@ export function BusinessesTab({ barbershops, onStatusChange, onViewSubscriptions
                         unblock: { icon: CheckCircle, variant: "default", label: "Desbloquear" },
                         deactivate: { icon: PowerOff, variant: "outline", label: "Desativar" },
                         activate: { icon: Power, variant: "default", label: "Ativar" },
+                        delete: { icon: Trash2, variant: "destructive", label: "Excluir" },
                       };
                       const config = actionConfig[action];
                       return (
