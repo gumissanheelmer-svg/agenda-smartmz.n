@@ -388,6 +388,10 @@ export default function SuperAdminDashboard() {
                   <Globe className="h-4 w-4" />
                   <span className="hidden sm:inline">Landing</span>
                 </TabsTrigger>
+                <TabsTrigger value="archon" className="flex items-center gap-2">
+                  <Brain className="h-4 w-4" />
+                  <span className="hidden sm:inline">Archon AI</span>
+                </TabsTrigger>
               </TabsList>
             </div>
 
