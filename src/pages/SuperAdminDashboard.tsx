@@ -7,7 +7,7 @@ import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, LayoutDashboard, Building2, CreditCard, LogOut, RefreshCw, Users, DollarSign, Globe, Wand2, MessageSquare } from 'lucide-react';
+import { Shield, LayoutDashboard, Building2, CreditCard, LogOut, RefreshCw, Users, DollarSign, Globe, Wand2, MessageSquare, Brain } from 'lucide-react';
 import { Zap } from 'lucide-react';
 import { DashboardTab } from '@/components/superadmin/DashboardTab';
 import { BusinessesTab } from '@/components/superadmin/BusinessesTab';
@@ -18,6 +18,7 @@ import { LandingSettingsTab } from '@/components/superadmin/LandingSettingsTab';
 import { CountriesTab } from '@/components/superadmin/CountriesTab';
 import { TemplatesTab } from '@/components/superadmin/TemplatesTab';
 import { WhatsAppCampaignsTab } from '@/components/superadmin/WhatsAppCampaignsTab';
+import { ArchonTab } from '@/components/superadmin/archon/ArchonTab';
 
 interface Barbershop {
   id: string;
@@ -350,7 +351,7 @@ export default function SuperAdminDashboard() {
         <main className="container mx-auto px-4 py-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <div className="overflow-x-auto -mx-4 px-4">
-              <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:max-w-5xl sm:grid-cols-9">
+              <TabsList className="inline-flex w-auto min-w-full sm:grid sm:w-full sm:max-w-6xl sm:grid-cols-10">
                 <TabsTrigger value="dashboard" className="flex items-center gap-2">
                   <LayoutDashboard className="h-4 w-4" />
                   <span className="hidden sm:inline">Dashboard</span>
@@ -386,6 +387,10 @@ export default function SuperAdminDashboard() {
                 <TabsTrigger value="landing" className="flex items-center gap-2">
                   <Globe className="h-4 w-4" />
                   <span className="hidden sm:inline">Landing</span>
+                </TabsTrigger>
+                <TabsTrigger value="archon" className="flex items-center gap-2">
+                  <Brain className="h-4 w-4" />
+                  <span className="hidden sm:inline">Archon AI</span>
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -451,6 +456,10 @@ export default function SuperAdminDashboard() {
 
             <TabsContent value="landing">
               <LandingSettingsTab />
+            </TabsContent>
+
+            <TabsContent value="archon">
+              <ArchonTab />
             </TabsContent>
           </Tabs>
         </main>

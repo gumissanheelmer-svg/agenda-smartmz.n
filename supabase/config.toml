@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.reset-affiliate-password]
 verify_jwt = false
+
+[functions.archon-ai]
+verify_jwt = false
