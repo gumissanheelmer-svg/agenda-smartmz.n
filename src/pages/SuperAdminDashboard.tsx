@@ -457,6 +457,10 @@ export default function SuperAdminDashboard() {
             <TabsContent value="landing">
               <LandingSettingsTab />
             </TabsContent>
+
+            <TabsContent value="archon">
+              <ArchonTab />
+            </TabsContent>
           </Tabs>
         </main>
       </div>
