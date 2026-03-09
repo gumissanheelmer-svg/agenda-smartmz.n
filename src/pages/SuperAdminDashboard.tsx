@@ -18,6 +18,7 @@ import { LandingSettingsTab } from '@/components/superadmin/LandingSettingsTab';
 import { CountriesTab } from '@/components/superadmin/CountriesTab';
 import { TemplatesTab } from '@/components/superadmin/TemplatesTab';
 import { WhatsAppCampaignsTab } from '@/components/superadmin/WhatsAppCampaignsTab';
+import { ArchonTab } from '@/components/superadmin/archon/ArchonTab';
 
 interface Barbershop {
   id: string;
