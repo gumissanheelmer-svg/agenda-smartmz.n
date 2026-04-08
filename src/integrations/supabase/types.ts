@@ -1823,6 +1823,35 @@ export type Database = {
           whatsapp_number: string
         }[]
       }
+      get_public_landing_settings: {
+        Args: never
+        Returns: {
+          currency_code: string
+          hero_subtitle: string
+          hero_title: string
+          plans: Json
+          pricing_discount_label: string
+          pricing_enabled: boolean
+          pricing_subtitle: string
+          pricing_title: string
+          primary_cta_label: string
+          secondary_cta_enabled: boolean
+          secondary_cta_label: string
+          vsl_cover_image_url: string
+          vsl_embed_url: string
+          vsl_enabled: boolean
+          vsl_minutes_label: number
+          vsl_subtitle: string
+          vsl_title: string
+          wa_sales_cta_label: string
+          wa_sales_enabled: boolean
+          wa_sales_url: string
+          wa_support_enabled: boolean
+          wa_support_position: string
+          wa_support_tooltip: string
+          wa_support_url: string
+        }[]
+      }
       get_public_professional_schedules: {
         Args: { p_barbershop_id: string }
         Returns: {
