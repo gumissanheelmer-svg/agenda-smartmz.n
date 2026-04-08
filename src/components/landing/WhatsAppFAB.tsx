@@ -1,12 +1,6 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
 import { useLandingSettings } from '@/hooks/useLandingSettings';
-
-function normalizePhone(phone: string): string {
-  const digits = phone.replace(/\D/g, '');
-  if (digits.length === 9) return '258' + digits;
-  return digits;
-}
 
 export function WhatsAppFAB() {
   const { settings, isLoading } = useLandingSettings();
@@ -14,11 +8,11 @@ export function WhatsAppFAB() {
   if (isLoading) return null;
   if (!settings.wa_support_enabled) return null;
 
-  const phone = settings.wa_support_phone || settings.wa_sales_phone;
-  if (!phone) return null;
+  // Use pre-built URL from secure RPC (no raw phone exposed)
+  const baseUrl = settings.wa_support_url || settings.wa_sales_url;
+  if (!baseUrl) return null;
 
-  const normalized = normalizePhone(phone);
-  const url = `https://wa.me/${normalized}?text=${encodeURIComponent(settings.wa_support_message)}`;
+  const url = `${baseUrl}?text=${encodeURIComponent(settings.wa_support_message)}`;
 
   return (
     <motion.div

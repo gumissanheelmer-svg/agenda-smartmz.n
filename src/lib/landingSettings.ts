@@ -38,12 +38,14 @@ export interface LandingSettings {
   wa_sales_phone: string | null;
   wa_sales_cta_label: string;
   wa_sales_message_template: string;
+  wa_sales_url: string | null;
   // WhatsApp Support
   wa_support_enabled: boolean;
   wa_support_phone: string | null;
   wa_support_tooltip: string;
   wa_support_message: string;
   wa_support_position: string;
+  wa_support_url: string | null;
   updated_at: string;
 }
 
@@ -75,11 +77,13 @@ export const DEFAULT_LANDING_SETTINGS: LandingSettings = {
   wa_sales_phone: null,
   wa_sales_cta_label: 'Configurar meu negócio agora',
   wa_sales_message_template: 'Olá! Quero configurar meu negócio no Agenda Smart. Vim pelo site. Pode me ajudar com a ativação e configuração?',
+  wa_sales_url: null,
   wa_support_enabled: true,
   wa_support_phone: null,
   wa_support_tooltip: 'Suporte no WhatsApp',
   wa_support_message: 'Olá! Preciso de suporte no Agenda Smart.',
   wa_support_position: 'bottom-right',
+  wa_support_url: null,
   updated_at: '',
 };
 
