@@ -3,14 +3,14 @@ import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLandingSettings } from '@/hooks/useLandingSettings';
-import { buildWhatsAppLink } from '@/lib/whatsapp';
 
 export function FinalCTA() {
   const { settings } = useLandingSettings();
 
-  const waPhone = settings.wa_sales_phone;
+  // Use pre-built secure URL instead of raw phone
+  const waUrl = settings.wa_sales_url;
   const waMessage = settings.wa_sales_message_template;
-  const waEnabled = settings.wa_sales_enabled && !!waPhone;
+  const waEnabled = settings.wa_sales_enabled && !!waUrl;
 
   return (
     <section className="py-24 px-6">
@@ -30,7 +30,7 @@ export function FinalCTA() {
           Crie seu espaço em minutos e comece a receber agendamentos hoje mesmo. Sem compromisso.
         </p>
         {waEnabled ? (
-          <a href={buildWhatsAppLink(waPhone!, waMessage)} target="_blank" rel="noopener noreferrer">
+          <a href={`${waUrl}?text=${encodeURIComponent(waMessage)}`} target="_blank" rel="noopener noreferrer">
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="inline-block">
               <Button variant="hero" size="xl" className="w-full sm:w-auto shadow-[0_0_30px_hsl(43_74%_49%_/_0.25)] hover:shadow-[0_0_50px_hsl(43_74%_49%_/_0.35)] transition-shadow duration-500">
                 🚀 Quero Meu Negócio Automatizado

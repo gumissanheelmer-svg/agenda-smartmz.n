@@ -39,9 +39,8 @@ function getWhatsAppUrl(phone: string | null) {
 
 export default function AngolaLanding() {
   const { settings } = useLandingSettings();
-  // Use wa_sales_phone from superadmin if set, otherwise fallback
-  const waPhone = settings.wa_sales_phone;
-  const waUrl = getWhatsAppUrl(waPhone);
+  // Use secure pre-built URL from RPC, fallback to default
+  const waUrl = settings.wa_sales_url || getWhatsAppUrl(null);
 
   return (
     <div className="min-h-screen bg-background overflow-hidden relative">
