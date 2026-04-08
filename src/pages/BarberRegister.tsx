@@ -10,6 +10,9 @@ import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, Lock, Mail, User, Phone, Clock, CheckCircle, Store } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
+import { checkRateLimit, recordAttempt, REGISTER_LIMIT } from '@/lib/rateLimiter';
+import { sanitizeText, sanitizePhone, sanitizeEmail } from '@/lib/sanitize';
+import { logError } from '@/lib/errorHandler';
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100),
@@ -41,8 +44,29 @@ export default function BarberRegister() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Rate limit check
+    const rateCheck = checkRateLimit(REGISTER_LIMIT);
+    if (!rateCheck.allowed) {
+      const seconds = Math.ceil(rateCheck.retryAfterMs / 1000);
+      toast({
+        title: 'Muitas tentativas',
+        description: `Aguarde ${seconds}s antes de tentar novamente.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Sanitize inputs
+    const sanitized = {
+      name: sanitizeText(formData.name, 100),
+      phone: sanitizePhone(formData.phone),
+      barbershopName: sanitizeText(formData.barbershopName, 100),
+      email: sanitizeEmail(formData.email),
+      password: formData.password,
+    };
+
     // Validate form
-    const validation = registerSchema.safeParse(formData);
+    const validation = registerSchema.safeParse(sanitized);
     if (!validation.success) {
       toast({
         title: 'Erro de validação',
@@ -53,12 +77,13 @@ export default function BarberRegister() {
     }
 
     setIsSubmitting(true);
+    recordAttempt(REGISTER_LIMIT);
 
     try {
       // 1. Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.email.trim(),
-        password: formData.password,
+        email: sanitized.email,
+        password: sanitized.password,
         options: {
           emailRedirectTo: `${window.location.origin}/login`,
         },
@@ -95,10 +120,10 @@ export default function BarberRegister() {
         .from('barber_accounts')
         .insert({
           user_id: authData.user.id,
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          phone: formData.phone.trim(),
-          barbershop_name: formData.barbershopName.trim(),
+          name: sanitized.name,
+          email: sanitized.email,
+          phone: sanitized.phone,
+          barbershop_name: sanitized.barbershopName,
           approval_status: 'pending',
         });
 
@@ -119,7 +144,7 @@ export default function BarberRegister() {
       await supabase.auth.signOut();
 
     } catch (err) {
-      console.error('Registration error:', err);
+      logError('BarberRegister', err);
       toast({
         title: 'Erro',
         description: 'Ocorreu um erro inesperado. Tente novamente.',
