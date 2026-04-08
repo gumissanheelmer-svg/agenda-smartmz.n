@@ -1971,6 +1971,10 @@ export type Database = {
         }
         Returns: Json
       }
+      user_belongs_to_barbershop: {
+        Args: { _barbershop_id: string; _user_id: string }
+        Returns: boolean
+      }
       validate_and_confirm_payment: {
         Args: {
           p_amount_detected?: number
