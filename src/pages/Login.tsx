@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Logo } from '@/components/Logo';
@@ -7,13 +7,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Lock, Mail, Clock, ShieldX, Building2, UserPlus, LogOut } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, Clock, ShieldX, Building2, UserPlus, LogOut, Shield } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import { checkRateLimit, recordAttempt, LOGIN_LIMIT } from '@/lib/rateLimiter';
+import {
+  checkRateLimit, recordAttempt, LOGIN_LIMIT,
+  checkServerRateLimit, logSecurityEvent, enforceDelay,
+  getStoredDelay, storeDelay, clearStoredDelay,
+} from '@/lib/rateLimiter';
 import { sanitizeEmail } from '@/lib/sanitize';
 import { logError } from '@/lib/errorHandler';
 import { supabase } from '@/integrations/supabase/client';
-
 type LoginState = 'form' | 'pending' | 'manager_pending' | 'unauthorized';
 
 export default function Login() {
