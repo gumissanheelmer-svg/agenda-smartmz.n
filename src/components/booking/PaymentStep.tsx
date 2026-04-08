@@ -34,8 +34,6 @@ import { pt } from 'date-fns/locale';
 
 interface PaymentStepProps {
   paymentMethods: PaymentMethod[];
-  mpesaNumber: string | null;
-  emolaNumber: string | null;
   whatsappNumber: string;
   businessName: string;
   businessId: string;
@@ -52,8 +50,6 @@ interface PaymentStepProps {
 
 export function PaymentStep({
   paymentMethods,
-  mpesaNumber,
-  emolaNumber,
   whatsappNumber,
   businessName,
   businessId,
@@ -79,6 +75,22 @@ export function PaymentStep({
   const [isPaymentConfirmed, setIsPaymentConfirmed] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
+
+  // Fetch payment numbers securely via RPC
+  const [mpesaNumber, setMpesaNumber] = useState<string | null>(null);
+  const [emolaNumber, setEmolaNumber] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!appointmentId) return;
+    supabase
+      .rpc('get_payment_numbers_for_appointment', { p_appointment_id: appointmentId })
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setMpesaNumber(data[0].mpesa_number || null);
+          setEmolaNumber(data[0].emola_number || null);
+        }
+      });
+  }, [appointmentId]);
 
   // Get the expected phone for the selected payment method
   const getPhoneForMethod = (method: PaymentMethod): string => {

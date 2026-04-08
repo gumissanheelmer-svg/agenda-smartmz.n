@@ -795,8 +795,6 @@ export function BookingForm({ onBack, barbershopId, backgroundImageUrl, backgrou
             paymentMethods={(barbershop?.payment_methods_enabled || []).filter(
               (m): m is PaymentMethod => m === 'mpesa' || m === 'emola'
             )}
-            mpesaNumber={barbershop?.mpesa_number || null}
-            emolaNumber={barbershop?.emola_number || null}
             whatsappNumber={barbershop?.whatsapp_number || ''}
             businessName={barbershop?.name || ''}
             businessId={currentBarbershopId || ''}

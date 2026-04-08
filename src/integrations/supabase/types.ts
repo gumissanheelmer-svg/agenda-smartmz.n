@@ -1721,6 +1721,26 @@ export type Database = {
         Args: { p_appointment_id: string }
         Returns: string
       }
+      get_payment_numbers_for_appointment: {
+        Args: { p_appointment_id: string }
+        Returns: {
+          currency_code: string
+          emola_number: string
+          mpesa_number: string
+          payment_methods_enabled: string[]
+        }[]
+      }
+      get_payment_settings_for_admin: {
+        Args: { p_barbershop_id: string }
+        Returns: {
+          currency_code: string
+          emola_number: string
+          mpesa_number: string
+          payment_methods: Json
+          payment_methods_enabled: string[]
+          payment_required: boolean
+        }[]
+      }
       get_professionals_for_service: {
         Args: { p_barbershop_id: string; p_service_id: string }
         Returns: {
