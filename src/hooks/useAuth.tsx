@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { useSessionTimeout } from '@/hooks/useSessionTimeout';
 
 interface BarberAccountInfo {
   id: string;
@@ -277,9 +278,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signOut,
       refreshRoles
     }}>
-      {children}
+      <SessionTimeoutWrapper isAuthenticated={!!user}>
+        {children}
+      </SessionTimeoutWrapper>
     </AuthContext.Provider>
   );
+}
+
+function SessionTimeoutWrapper({ isAuthenticated, children }: { isAuthenticated: boolean; children: React.ReactNode }) {
+  useSessionTimeout(isAuthenticated);
+  return <>{children}</>;
 }
 
 export function useAuth() {
