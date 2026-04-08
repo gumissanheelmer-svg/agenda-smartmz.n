@@ -532,13 +532,30 @@ export default function Login() {
                   </div>
                 </div>
 
+                {/* Cooldown indicator */}
+                {cooldownSeconds > 0 && (
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                    <Shield className="w-4 h-4 text-destructive shrink-0" />
+                    <p className="text-sm text-destructive">
+                      Aguarde {cooldownSeconds}s antes de tentar novamente.
+                    </p>
+                  </div>
+                )}
+
+                {/* Remaining attempts warning */}
+                {remainingAttempts !== null && remainingAttempts <= 5 && remainingAttempts > 0 && cooldownSeconds === 0 && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    {remainingAttempts} tentativa(s) restante(s) antes do bloqueio.
+                  </p>
+                )}
+
                 <Button
                   type="submit"
                   variant="gold"
                   className="w-full mt-6"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || cooldownSeconds > 0}
                 >
-                  {isSubmitting ? 'Entrando...' : 'Entrar'}
+                  {isSubmitting ? 'Entrando...' : cooldownSeconds > 0 ? `Aguarde ${cooldownSeconds}s` : 'Entrar'}
                 </Button>
               </form>
 
