@@ -12,6 +12,9 @@ import { useToast } from '@/hooks/use-toast';
 import { Scissors, Upload, Eye, ArrowLeft, Loader2, Sparkles, Store, Heart, PenTool } from 'lucide-react';
 import { ALL_BUSINESS_TYPES, getBusinessConfig, type BusinessType } from '@/lib/businessConfig';
 import { getReferralCode, clearReferralCode } from '@/hooks/useReferral';
+import { checkRateLimit, recordAttempt, REGISTER_LIMIT } from '@/lib/rateLimiter';
+import { sanitizeText, sanitizePhone, sanitizeEmail, sanitizeSlug } from '@/lib/sanitize';
+import { logError } from '@/lib/errorHandler';
 
 interface Country {
   country_code: string;
