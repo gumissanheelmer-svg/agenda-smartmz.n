@@ -17,6 +17,7 @@ import { ServiceGallery } from '@/components/ServiceGallery';
 import { PaymentStep } from '@/components/booking/PaymentStep';
 import { PaymentMethod } from '@/lib/paymentCodeExtractor';
 import { generateBusinessTimeSlots, isBusinessHoursConfigured, filterAvailableSlots } from '@/lib/timeSlotUtils';
+import { checkAction, recordAction, BOOKING_THROTTLE } from '@/lib/behaviorGuard';
 
 interface BookingFormProps {
   onBack: () => void;
@@ -300,6 +301,17 @@ export function BookingForm({ onBack, barbershopId, backgroundImageUrl, backgrou
       toast({
         title: 'Erro',
         description: 'Por favor, preencha todos os campos.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Anti-spam: check booking throttle
+    const guard = checkAction(BOOKING_THROTTLE);
+    if (!guard.allowed) {
+      toast({
+        title: 'Muitas tentativas',
+        description: `Aguarde ${guard.cooldownSeconds}s antes de tentar novamente.`,
         variant: 'destructive',
       });
       return;
