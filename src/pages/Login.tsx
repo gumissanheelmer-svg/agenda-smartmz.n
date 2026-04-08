@@ -30,6 +30,34 @@ export default function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginState, setLoginState] = useState<LoginState>('form');
   const [isCheckingRoles, setIsCheckingRoles] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [remainingAttempts, setRemainingAttempts] = useState<number | null>(null);
+
+  // Cooldown countdown timer
+  useEffect(() => {
+    if (cooldownSeconds <= 0) return;
+    const timer = setInterval(() => {
+      setCooldownSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldownSeconds]);
+
+  // Check for stored delay on mount
+  useEffect(() => {
+    const stored = getStoredDelay();
+    if (stored) {
+      const remaining = Math.ceil((stored.unlocksAt - Date.now()) / 1000);
+      if (remaining > 0) {
+        setCooldownSeconds(remaining);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     // Don't do anything while loading or checking roles
