@@ -38,12 +38,14 @@ export interface LandingSettings {
   wa_sales_phone: string | null;
   wa_sales_cta_label: string;
   wa_sales_message_template: string;
+  wa_sales_url: string | null;
   // WhatsApp Support
   wa_support_enabled: boolean;
   wa_support_phone: string | null;
   wa_support_tooltip: string;
   wa_support_message: string;
   wa_support_position: string;
+  wa_support_url: string | null;
   updated_at: string;
 }
 
@@ -75,27 +77,53 @@ export const DEFAULT_LANDING_SETTINGS: LandingSettings = {
   wa_sales_phone: null,
   wa_sales_cta_label: 'Configurar meu negócio agora',
   wa_sales_message_template: 'Olá! Quero configurar meu negócio no Agenda Smart. Vim pelo site. Pode me ajudar com a ativação e configuração?',
+  wa_sales_url: null,
   wa_support_enabled: true,
   wa_support_phone: null,
   wa_support_tooltip: 'Suporte no WhatsApp',
   wa_support_message: 'Olá! Preciso de suporte no Agenda Smart.',
   wa_support_position: 'bottom-right',
+  wa_support_url: null,
   updated_at: '',
 };
 
 export async function getLandingSettings(): Promise<LandingSettings> {
   try {
-    const { data, error } = await supabase
-      .from('landing_settings')
-      .select('*')
-      .eq('site_key', 'agenda-smart')
-      .single();
+    // Use secure RPC that masks phone numbers
+    const { data, error } = await supabase.rpc('get_public_landing_settings');
 
-    if (error || !data) return DEFAULT_LANDING_SETTINGS;
+    if (error || !data || data.length === 0) return DEFAULT_LANDING_SETTINGS;
 
+    const row = data[0];
     return {
-      ...data,
-      plans: (data.plans as unknown as Plan[]) || DEFAULT_LANDING_SETTINGS.plans,
+      ...DEFAULT_LANDING_SETTINGS,
+      hero_title: row.hero_title,
+      hero_subtitle: row.hero_subtitle,
+      primary_cta_label: row.primary_cta_label,
+      secondary_cta_enabled: row.secondary_cta_enabled,
+      secondary_cta_label: row.secondary_cta_label,
+      vsl_enabled: row.vsl_enabled,
+      vsl_title: row.vsl_title,
+      vsl_subtitle: row.vsl_subtitle,
+      vsl_minutes_label: row.vsl_minutes_label,
+      vsl_embed_url: row.vsl_embed_url,
+      vsl_cover_image_url: row.vsl_cover_image_url,
+      pricing_enabled: row.pricing_enabled,
+      pricing_title: row.pricing_title,
+      pricing_subtitle: row.pricing_subtitle,
+      pricing_discount_label: row.pricing_discount_label,
+      currency_code: row.currency_code,
+      plans: (row.plans as unknown as Plan[]) || DEFAULT_LANDING_SETTINGS.plans,
+      wa_sales_enabled: row.wa_sales_enabled,
+      wa_sales_cta_label: row.wa_sales_cta_label,
+      // Phone numbers are now pre-built URLs from the RPC
+      wa_sales_phone: null, // no longer exposed
+      wa_sales_url: row.wa_sales_url || null,
+      wa_support_enabled: row.wa_support_enabled,
+      wa_support_tooltip: row.wa_support_tooltip,
+      wa_support_phone: null, // no longer exposed
+      wa_support_position: row.wa_support_position,
+      wa_support_url: row.wa_support_url || null,
     } as LandingSettings;
   } catch {
     return DEFAULT_LANDING_SETTINGS;

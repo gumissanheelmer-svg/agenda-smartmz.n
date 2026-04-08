@@ -112,9 +112,9 @@ export function HeroSection() {
             transition={{ duration: 0.7, delay: 0.6 }}
           >
             {/* Primary CTA — always WhatsApp assisted setup */}
-            {settings.wa_sales_enabled && settings.wa_sales_phone ? (
+            {settings.wa_sales_enabled && settings.wa_sales_url ? (
               <a
-                href={`https://wa.me/${settings.wa_sales_phone.replace(/\D/g, '').length === 9 ? '258' + settings.wa_sales_phone.replace(/\D/g, '') : settings.wa_sales_phone.replace(/\D/g, '')}?text=${encodeURIComponent(settings.wa_sales_message_template)}`}
+                href={`${settings.wa_sales_url}?text=${encodeURIComponent(settings.wa_sales_message_template)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto"
@@ -154,7 +154,7 @@ export function HeroSection() {
             </div>
           </motion.div>
 
-          {settings.wa_sales_enabled && settings.wa_sales_phone && (
+          {settings.wa_sales_enabled && settings.wa_sales_url && (
             <motion.p
               className="mt-3 text-sm text-muted-foreground/70"
               initial={{ opacity: 0 }}
