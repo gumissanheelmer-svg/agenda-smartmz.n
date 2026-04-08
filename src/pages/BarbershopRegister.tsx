@@ -481,7 +481,7 @@ export default function BarbershopRegister() {
       navigate('/pending-approval');
 
     } catch (error: any) {
-      console.error('Registration error:', error);
+      logError('BarbershopRegister', error);
       toast({
         title: "Erro ao registrar",
         description: error.message || "Tente novamente mais tarde",
