@@ -29,6 +29,17 @@ export default function ForgotPassword() {
       return;
     }
 
+    // Anti-spam guard
+    const guard = checkAction(PASSWORD_RESET_THROTTLE);
+    if (!guard.allowed) {
+      toast({
+        title: 'Muitas tentativas',
+        description: `Aguarde ${guard.cooldownSeconds}s antes de tentar novamente.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -45,6 +56,7 @@ export default function ForgotPassword() {
         return;
       }
 
+      recordAction(PASSWORD_RESET_THROTTLE);
       setEmailSent(true);
       toast({
         title: 'Email enviado!',
