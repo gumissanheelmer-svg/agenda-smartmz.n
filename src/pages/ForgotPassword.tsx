@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import { checkAction, recordAction, PASSWORD_RESET_THROTTLE } from '@/lib/behaviorGuard';
 
 export default function ForgotPassword() {
   const { toast } = useToast();

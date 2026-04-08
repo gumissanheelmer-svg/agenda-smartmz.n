@@ -358,6 +358,9 @@ export function BookingForm({ onBack, barbershopId, backgroundImageUrl, backgrou
         return;
       }
 
+      // Record successful booking for throttle tracking
+      recordAction(BOOKING_THROTTLE);
+
       // Create appointment object for display
       setCreatedAppointment({
         id: result.appointment_id,
