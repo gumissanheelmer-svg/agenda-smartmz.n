@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, Lock, Mail, User, Phone, Clock, CheckCircle, Store } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
-import { checkRateLimit, recordAttempt, REGISTER_LIMIT } from '@/lib/rateLimiter';
+import { checkRateLimit, recordAttempt, REGISTER_LIMIT, checkServerRateLimit, logSecurityEvent, storeDelay, getStoredDelay } from '@/lib/rateLimiter';
 import { sanitizeText, sanitizePhone, sanitizeEmail } from '@/lib/sanitize';
 import { logError } from '@/lib/errorHandler';
 

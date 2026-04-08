@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Logo } from '@/components/Logo';
@@ -7,13 +7,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Lock, Mail, Clock, ShieldX, Building2, UserPlus, LogOut } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, Clock, ShieldX, Building2, UserPlus, LogOut, Shield } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import { checkRateLimit, recordAttempt, LOGIN_LIMIT } from '@/lib/rateLimiter';
+import {
+  checkRateLimit, recordAttempt, clearRateLimit, LOGIN_LIMIT,
+  checkServerRateLimit, logSecurityEvent, enforceDelay,
+  getStoredDelay, storeDelay, clearStoredDelay,
+} from '@/lib/rateLimiter';
 import { sanitizeEmail } from '@/lib/sanitize';
 import { logError } from '@/lib/errorHandler';
 import { supabase } from '@/integrations/supabase/client';
-
 type LoginState = 'form' | 'pending' | 'manager_pending' | 'unauthorized';
 
 export default function Login() {
@@ -27,6 +30,34 @@ export default function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginState, setLoginState] = useState<LoginState>('form');
   const [isCheckingRoles, setIsCheckingRoles] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [remainingAttempts, setRemainingAttempts] = useState<number | null>(null);
+
+  // Cooldown countdown timer
+  useEffect(() => {
+    if (cooldownSeconds <= 0) return;
+    const timer = setInterval(() => {
+      setCooldownSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldownSeconds]);
+
+  // Check for stored delay on mount
+  useEffect(() => {
+    const stored = getStoredDelay();
+    if (stored) {
+      const remaining = Math.ceil((stored.unlocksAt - Date.now()) / 1000);
+      if (remaining > 0) {
+        setCooldownSeconds(remaining);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     // Don't do anything while loading or checking roles
@@ -113,10 +144,20 @@ export default function Login() {
       return;
     }
 
-    // Rate limit check
+    // 1. Client-side rate limit (instant UX)
+    if (cooldownSeconds > 0) {
+      toast({
+        title: 'Aguarde',
+        description: `Tente novamente em ${cooldownSeconds}s.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
     const rateCheck = checkRateLimit(LOGIN_LIMIT);
     if (!rateCheck.allowed) {
       const seconds = Math.ceil(rateCheck.retryAfterMs / 1000);
+      setCooldownSeconds(seconds);
       toast({
         title: 'Muitas tentativas',
         description: `Aguarde ${seconds}s antes de tentar novamente.`,
@@ -126,6 +167,43 @@ export default function Login() {
     }
 
     setIsSubmitting(true);
+
+    // 2. Server-side pre-login check (anti-bot, IP + email rate limit)
+    const serverCheck = await checkServerRateLimit(cleanEmail);
+
+    if (!serverCheck.allowed) {
+      setIsSubmitting(false);
+      if (serverCheck.is_locked) {
+        toast({
+          title: 'Conta bloqueada',
+          description: 'Muitas tentativas falhadas. Aguarde 15 minutos ou redefina sua senha.',
+          variant: 'destructive',
+        });
+        setCooldownSeconds(60);
+        storeDelay(60_000);
+      } else if (serverCheck.ip_blocked) {
+        toast({
+          title: 'Acesso temporariamente bloqueado',
+          description: 'Atividade suspeita detectada. Tente novamente mais tarde.',
+          variant: 'destructive',
+        });
+        setCooldownSeconds(120);
+        storeDelay(120_000);
+      }
+      return;
+    }
+
+    // 3. Enforce progressive delay from server
+    if (serverCheck.delay_ms > 0) {
+      const delaySec = Math.ceil(serverCheck.delay_ms / 1000);
+      toast({
+        title: 'Delay de segurança',
+        description: `Aguardando ${delaySec}s por segurança...`,
+      });
+      await enforceDelay(serverCheck.delay_ms);
+    }
+
+    setRemainingAttempts(serverCheck.remaining_attempts);
     setIsCheckingRoles(true);
 
     try {
@@ -135,23 +213,45 @@ export default function Login() {
         setIsCheckingRoles(false);
         recordAttempt(LOGIN_LIMIT);
 
-        // Log failed attempt server-side (fire-and-forget)
-        supabase.functions.invoke('log-security-event', {
-          body: { event_type: 'login_failed', email: cleanEmail },
-        }).catch(() => {});
+        // Log failed attempt server-side and get delay info
+        const result = await logSecurityEvent('login_failed', cleanEmail);
 
+        if (result) {
+          setRemainingAttempts(result.remaining_attempts);
+          if (result.delay_ms > 0) {
+            const delaySec = Math.ceil(result.delay_ms / 1000);
+            setCooldownSeconds(delaySec);
+            storeDelay(result.delay_ms);
+          }
+          if (result.is_locked) {
+            toast({
+              title: 'Conta bloqueada',
+              description: 'Muitas tentativas falhadas. Aguarde 15 minutos ou redefina sua senha.',
+              variant: 'destructive',
+            });
+            return;
+          }
+        }
+
+        const attemptsLeft = result?.remaining_attempts ?? null;
         toast({
           title: 'Erro ao entrar',
-          description: 'Email ou senha incorretos.',
+          description: attemptsLeft !== null && attemptsLeft <= 5
+            ? `Email ou senha incorretos. ${attemptsLeft} tentativa(s) restante(s).`
+            : 'Email ou senha incorretos.',
           variant: 'destructive',
         });
         return;
       }
 
+      // Login success — clear all rate limit state
+      clearStoredDelay();
+      clearRateLimit(LOGIN_LIMIT.key);
+      setRemainingAttempts(null);
+      setCooldownSeconds(0);
+
       // Log success (fire-and-forget)
-      supabase.functions.invoke('log-security-event', {
-        body: { event_type: 'login_success', email: cleanEmail },
-      }).catch(() => {});
+      logSecurityEvent('login_success', cleanEmail).catch(() => {});
 
       toast({
         title: 'Bem-vindo!',
@@ -432,13 +532,30 @@ export default function Login() {
                   </div>
                 </div>
 
+                {/* Cooldown indicator */}
+                {cooldownSeconds > 0 && (
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                    <Shield className="w-4 h-4 text-destructive shrink-0" />
+                    <p className="text-sm text-destructive">
+                      Aguarde {cooldownSeconds}s antes de tentar novamente.
+                    </p>
+                  </div>
+                )}
+
+                {/* Remaining attempts warning */}
+                {remainingAttempts !== null && remainingAttempts <= 5 && remainingAttempts > 0 && cooldownSeconds === 0 && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    {remainingAttempts} tentativa(s) restante(s) antes do bloqueio.
+                  </p>
+                )}
+
                 <Button
                   type="submit"
                   variant="gold"
                   className="w-full mt-6"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || cooldownSeconds > 0}
                 >
-                  {isSubmitting ? 'Entrando...' : 'Entrar'}
+                  {isSubmitting ? 'Entrando...' : cooldownSeconds > 0 ? `Aguarde ${cooldownSeconds}s` : 'Entrar'}
                 </Button>
               </form>
 
