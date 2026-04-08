@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.archon-ai]
 verify_jwt = false
+
+[functions.log-security-event]
+verify_jwt = false

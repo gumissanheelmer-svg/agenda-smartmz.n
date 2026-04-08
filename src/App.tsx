@@ -7,6 +7,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from "@/hooks/useAuth";
 import { BarbershopProvider } from "@/hooks/useBarbershop";
 import { DynamicThemeProvider } from "@/components/DynamicThemeProvider";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import BarbershopList from "./pages/BarbershopList";
 import AngolaLanding from "./pages/AngolaLanding";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
@@ -63,13 +64,25 @@ const App = () => (
                   <Route path="/pending-approval" element={<PendingApproval />} />
                   
                   {/* Super Admin routes */}
-                  <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
+                  <Route path="/superadmin/dashboard" element={
+                    <ProtectedRoute requiredRole="superadmin">
+                      <SuperAdminDashboard />
+                    </ProtectedRoute>
+                  } />
                   
                   {/* Affiliate routes */}
-                  <Route path="/affiliate" element={<AffiliateDashboard />} />
+                  <Route path="/affiliate" element={
+                    <ProtectedRoute requiredRole="affiliate">
+                      <AffiliateDashboard />
+                    </ProtectedRoute>
+                  } />
                   
                   {/* Admin routes */}
-                  <Route path="/admin/dashboard" element={<AdminDashboard />}>
+                  <Route path="/admin/dashboard" element={
+                    <ProtectedRoute requiredRole="admin">
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }>
                     <Route index element={<DashboardOverview />} />
                     <Route path="appointments" element={<AppointmentsList />} />
                     <Route path="barbers" element={<BarbersList />} />
@@ -85,7 +98,11 @@ const App = () => (
                   </Route>
                   
                   {/* Barber routes */}
-                  <Route path="/barber/dashboard" element={<BarberDashboard />} />
+                  <Route path="/barber/dashboard" element={
+                    <ProtectedRoute requiredRole="barber">
+                      <BarberDashboard />
+                    </ProtectedRoute>
+                  } />
                   
                   {/* 404 */}
                   <Route path="*" element={<NotFound />} />

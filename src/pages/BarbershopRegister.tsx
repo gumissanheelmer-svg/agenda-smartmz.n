@@ -12,6 +12,9 @@ import { useToast } from '@/hooks/use-toast';
 import { Scissors, Upload, Eye, ArrowLeft, Loader2, Sparkles, Store, Heart, PenTool } from 'lucide-react';
 import { ALL_BUSINESS_TYPES, getBusinessConfig, type BusinessType } from '@/lib/businessConfig';
 import { getReferralCode, clearReferralCode } from '@/hooks/useReferral';
+import { checkRateLimit, recordAttempt, REGISTER_LIMIT } from '@/lib/rateLimiter';
+import { sanitizeText, sanitizePhone, sanitizeEmail, sanitizeSlug } from '@/lib/sanitize';
+import { logError } from '@/lib/errorHandler';
 
 interface Country {
   country_code: string;
@@ -195,6 +198,19 @@ export default function BarbershopRegister() {
   };
 
   const handleSubmit = async () => {
+    // Rate limit check
+    const rateCheck = checkRateLimit(REGISTER_LIMIT);
+    if (!rateCheck.allowed) {
+      const seconds = Math.ceil(rateCheck.retryAfterMs / 1000);
+      toast({
+        title: 'Muitas tentativas',
+        description: `Aguarde ${seconds}s antes de tentar novamente.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    recordAttempt(REGISTER_LIMIT);
     setIsLoading(true);
 
     try {
@@ -465,7 +481,7 @@ export default function BarbershopRegister() {
       navigate('/pending-approval');
 
     } catch (error: any) {
-      console.error('Registration error:', error);
+      logError('BarbershopRegister', error);
       toast({
         title: "Erro ao registrar",
         description: error.message || "Tente novamente mais tarde",

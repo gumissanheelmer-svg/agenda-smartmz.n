@@ -9,6 +9,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, Lock, Mail, Clock, ShieldX, Building2, UserPlus, LogOut } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import { checkRateLimit, recordAttempt, LOGIN_LIMIT } from '@/lib/rateLimiter';
+import { sanitizeEmail } from '@/lib/sanitize';
+import { logError } from '@/lib/errorHandler';
+import { supabase } from '@/integrations/supabase/client';
 
 type LoginState = 'form' | 'pending' | 'manager_pending' | 'unauthorized';
 
@@ -98,10 +102,24 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email.trim() || !password.trim()) {
+    const cleanEmail = sanitizeEmail(email);
+
+    if (!cleanEmail || !password.trim()) {
       toast({
         title: 'Erro',
         description: 'Por favor, preencha todos os campos.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Rate limit check
+    const rateCheck = checkRateLimit(LOGIN_LIMIT);
+    if (!rateCheck.allowed) {
+      const seconds = Math.ceil(rateCheck.retryAfterMs / 1000);
+      toast({
+        title: 'Muitas tentativas',
+        description: `Aguarde ${seconds}s antes de tentar novamente.`,
         variant: 'destructive',
       });
       return;
@@ -111,10 +129,17 @@ export default function Login() {
     setIsCheckingRoles(true);
 
     try {
-      const { error } = await signIn(email.trim(), password);
+      const { error } = await signIn(cleanEmail, password);
 
       if (error) {
         setIsCheckingRoles(false);
+        recordAttempt(LOGIN_LIMIT);
+
+        // Log failed attempt server-side (fire-and-forget)
+        supabase.functions.invoke('log-security-event', {
+          body: { event_type: 'login_failed', email: cleanEmail },
+        }).catch(() => {});
+
         toast({
           title: 'Erro ao entrar',
           description: 'Email ou senha incorretos.',
@@ -122,6 +147,11 @@ export default function Login() {
         });
         return;
       }
+
+      // Log success (fire-and-forget)
+      supabase.functions.invoke('log-security-event', {
+        body: { event_type: 'login_success', email: cleanEmail },
+      }).catch(() => {});
 
       toast({
         title: 'Bem-vindo!',
@@ -134,6 +164,7 @@ export default function Login() {
       }, 1500);
     } catch (err) {
       setIsCheckingRoles(false);
+      logError('Login', err);
       toast({
         title: 'Erro',
         description: 'Ocorreu um erro. Tente novamente.',
