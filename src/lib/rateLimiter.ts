@@ -1,7 +1,12 @@
 /**
- * Client-side rate limiter using localStorage timestamps.
- * Prevents brute-force attacks on login and registration forms.
+ * Client-side rate limiter with server-side enforcement.
+ * Combines localStorage timestamps (fast UX) with server-side
+ * checks via log-security-event edge function (anti-bot).
  */
+
+import { supabase } from '@/integrations/supabase/client';
+
+// ── Client-side (localStorage) rate limiter ──
 
 interface RateLimitConfig {
   key: string;
@@ -85,3 +90,103 @@ export const REGISTER_LIMIT = {
   maxAttempts: 3,
   windowMs: 60_000,
 };
+
+// ── Server-side rate limit check ──
+
+interface ServerRateLimitResult {
+  allowed: boolean;
+  is_locked: boolean;
+  ip_blocked: boolean;
+  delay_ms: number;
+  remaining_attempts: number;
+  failed_attempts: number;
+}
+
+/**
+ * Check server-side rate limits before attempting login.
+ * Returns the server response or a permissive fallback if the call fails.
+ */
+export async function checkServerRateLimit(email: string): Promise<ServerRateLimitResult> {
+  try {
+    const { data, error } = await supabase.functions.invoke('log-security-event', {
+      body: { action: 'check', email: email.toLowerCase().trim() },
+    });
+
+    if (error || !data) {
+      // Fail open — don't block login if the check itself fails
+      return { allowed: true, is_locked: false, ip_blocked: false, delay_ms: 0, remaining_attempts: 10, failed_attempts: 0 };
+    }
+
+    return data as ServerRateLimitResult;
+  } catch {
+    return { allowed: true, is_locked: false, ip_blocked: false, delay_ms: 0, remaining_attempts: 10, failed_attempts: 0 };
+  }
+}
+
+/**
+ * Log a security event and get back progressive delay info.
+ */
+export async function logSecurityEvent(
+  eventType: string,
+  email: string,
+  metadata?: Record<string, unknown>
+): Promise<ServerRateLimitResult | null> {
+  try {
+    const { data } = await supabase.functions.invoke('log-security-event', {
+      body: { event_type: eventType, email: email.toLowerCase().trim(), metadata },
+    });
+    return data as ServerRateLimitResult | null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Enforce progressive delay — returns a promise that resolves after the delay.
+ */
+export function enforceDelay(delayMs: number): Promise<void> {
+  if (delayMs <= 0) return Promise.resolve();
+  return new Promise((resolve) => setTimeout(resolve, delayMs));
+}
+
+// ── Progressive delay stored client-side (for immediate UX) ──
+
+const DELAY_STORAGE_KEY = 'rl_progressive_delay';
+
+interface DelayState {
+  delayMs: number;
+  unlocksAt: number; // timestamp when the delay expires
+}
+
+export function getStoredDelay(): DelayState | null {
+  try {
+    const raw = localStorage.getItem(DELAY_STORAGE_KEY);
+    if (!raw) return null;
+    const state = JSON.parse(raw) as DelayState;
+    if (Date.now() >= state.unlocksAt) {
+      localStorage.removeItem(DELAY_STORAGE_KEY);
+      return null;
+    }
+    return state;
+  } catch {
+    return null;
+  }
+}
+
+export function storeDelay(delayMs: number): void {
+  if (delayMs <= 0) return;
+  try {
+    const state: DelayState = { delayMs, unlocksAt: Date.now() + delayMs };
+    localStorage.setItem(DELAY_STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // ignore
+  }
+}
+
+export function clearStoredDelay(): void {
+  try {
+    localStorage.removeItem(DELAY_STORAGE_KEY);
+  } catch {
+    // ignore
+  }
+}
