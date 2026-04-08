@@ -144,10 +144,20 @@ export default function Login() {
       return;
     }
 
-    // Rate limit check
+    // 1. Client-side rate limit (instant UX)
+    if (cooldownSeconds > 0) {
+      toast({
+        title: 'Aguarde',
+        description: `Tente novamente em ${cooldownSeconds}s.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
     const rateCheck = checkRateLimit(LOGIN_LIMIT);
     if (!rateCheck.allowed) {
       const seconds = Math.ceil(rateCheck.retryAfterMs / 1000);
+      setCooldownSeconds(seconds);
       toast({
         title: 'Muitas tentativas',
         description: `Aguarde ${seconds}s antes de tentar novamente.`,
@@ -157,6 +167,43 @@ export default function Login() {
     }
 
     setIsSubmitting(true);
+
+    // 2. Server-side pre-login check (anti-bot, IP + email rate limit)
+    const serverCheck = await checkServerRateLimit(cleanEmail);
+
+    if (!serverCheck.allowed) {
+      setIsSubmitting(false);
+      if (serverCheck.is_locked) {
+        toast({
+          title: 'Conta bloqueada',
+          description: 'Muitas tentativas falhadas. Aguarde 15 minutos ou redefina sua senha.',
+          variant: 'destructive',
+        });
+        setCooldownSeconds(60);
+        storeDelay(60_000);
+      } else if (serverCheck.ip_blocked) {
+        toast({
+          title: 'Acesso temporariamente bloqueado',
+          description: 'Atividade suspeita detectada. Tente novamente mais tarde.',
+          variant: 'destructive',
+        });
+        setCooldownSeconds(120);
+        storeDelay(120_000);
+      }
+      return;
+    }
+
+    // 3. Enforce progressive delay from server
+    if (serverCheck.delay_ms > 0) {
+      const delaySec = Math.ceil(serverCheck.delay_ms / 1000);
+      toast({
+        title: 'Delay de segurança',
+        description: `Aguardando ${delaySec}s por segurança...`,
+      });
+      await enforceDelay(serverCheck.delay_ms);
+    }
+
+    setRemainingAttempts(serverCheck.remaining_attempts);
     setIsCheckingRoles(true);
 
     try {
@@ -166,23 +213,45 @@ export default function Login() {
         setIsCheckingRoles(false);
         recordAttempt(LOGIN_LIMIT);
 
-        // Log failed attempt server-side (fire-and-forget)
-        supabase.functions.invoke('log-security-event', {
-          body: { event_type: 'login_failed', email: cleanEmail },
-        }).catch(() => {});
+        // Log failed attempt server-side and get delay info
+        const result = await logSecurityEvent('login_failed', cleanEmail);
 
+        if (result) {
+          setRemainingAttempts(result.remaining_attempts);
+          if (result.delay_ms > 0) {
+            const delaySec = Math.ceil(result.delay_ms / 1000);
+            setCooldownSeconds(delaySec);
+            storeDelay(result.delay_ms);
+          }
+          if (result.is_locked) {
+            toast({
+              title: 'Conta bloqueada',
+              description: 'Muitas tentativas falhadas. Aguarde 15 minutos ou redefina sua senha.',
+              variant: 'destructive',
+            });
+            return;
+          }
+        }
+
+        const attemptsLeft = result?.remaining_attempts ?? null;
         toast({
           title: 'Erro ao entrar',
-          description: 'Email ou senha incorretos.',
+          description: attemptsLeft !== null && attemptsLeft <= 5
+            ? `Email ou senha incorretos. ${attemptsLeft} tentativa(s) restante(s).`
+            : 'Email ou senha incorretos.',
           variant: 'destructive',
         });
         return;
       }
 
+      // Login success — clear all rate limit state
+      clearStoredDelay();
+      clearRateLimit(LOGIN_LIMIT.key);
+      setRemainingAttempts(null);
+      setCooldownSeconds(0);
+
       // Log success (fire-and-forget)
-      supabase.functions.invoke('log-security-event', {
-        body: { event_type: 'login_success', email: cleanEmail },
-      }).catch(() => {});
+      logSecurityEvent('login_success', cleanEmail).catch(() => {});
 
       toast({
         title: 'Bem-vindo!',
