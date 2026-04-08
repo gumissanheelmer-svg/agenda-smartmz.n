@@ -17,6 +17,7 @@ import {
 import { sanitizeEmail } from '@/lib/sanitize';
 import { logError } from '@/lib/errorHandler';
 import { supabase } from '@/integrations/supabase/client';
+import { checkServerBehavior } from '@/lib/behaviorGuard';
 type LoginState = 'form' | 'pending' | 'manager_pending' | 'unauthorized';
 
 export default function Login() {

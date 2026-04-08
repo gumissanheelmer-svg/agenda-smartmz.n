@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import { checkAction, recordAction, PASSWORD_RESET_THROTTLE } from '@/lib/behaviorGuard';
 
 export default function ForgotPassword() {
   const { toast } = useToast();
@@ -23,6 +24,17 @@ export default function ForgotPassword() {
       toast({
         title: 'Erro',
         description: 'Por favor, informe seu email.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Anti-spam guard
+    const guard = checkAction(PASSWORD_RESET_THROTTLE);
+    if (!guard.allowed) {
+      toast({
+        title: 'Muitas tentativas',
+        description: `Aguarde ${guard.cooldownSeconds}s antes de tentar novamente.`,
         variant: 'destructive',
       });
       return;
@@ -44,6 +56,7 @@ export default function ForgotPassword() {
         return;
       }
 
+      recordAction(PASSWORD_RESET_THROTTLE);
       setEmailSent(true);
       toast({
         title: 'Email enviado!',
