@@ -198,6 +198,19 @@ export default function BarbershopRegister() {
   };
 
   const handleSubmit = async () => {
+    // Rate limit check
+    const rateCheck = checkRateLimit(REGISTER_LIMIT);
+    if (!rateCheck.allowed) {
+      const seconds = Math.ceil(rateCheck.retryAfterMs / 1000);
+      toast({
+        title: 'Muitas tentativas',
+        description: `Aguarde ${seconds}s antes de tentar novamente.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    recordAttempt(REGISTER_LIMIT);
     setIsLoading(true);
 
     try {
