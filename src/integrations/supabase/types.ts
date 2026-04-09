@@ -1721,6 +1721,15 @@ export type Database = {
         Args: { p_appointment_id: string }
         Returns: string
       }
+      get_clients_for_barbershop: {
+        Args: { p_barbershop_id: string }
+        Returns: {
+          appointment_count: number
+          client_name: string
+          client_phone_masked: string
+          last_appointment: string
+        }[]
+      }
       get_payment_numbers_for_appointment: {
         Args: { p_appointment_id: string }
         Returns: {
@@ -1982,6 +1991,7 @@ export type Database = {
         Returns: boolean
       }
       is_superadmin: { Args: { _user_id: string }; Returns: boolean }
+      mask_phone: { Args: { p_phone: string }; Returns: string }
       rpc_update_appointment_status: {
         Args: { p_appointment_id: string; p_new_status: string }
         Returns: Json

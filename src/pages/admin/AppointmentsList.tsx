@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useAdminBarbershop } from '@/hooks/useAdminBarbershop';
 import { getBusinessToClientMessage, BusinessType } from '@/lib/whatsappTemplates';
 import { openWhatsApp } from '@/lib/whatsapp';
+import { maskPhone } from '@/lib/phoneMask';
 
 interface AppointmentWithDetails {
   id: string;
@@ -230,7 +231,7 @@ export default function AppointmentsList() {
                       <p className="font-medium text-foreground">{apt.client_name}</p>
                       {getStatusBadge(apt.status)}
                     </div>
-                    <p className="text-sm text-muted-foreground">{apt.client_phone}</p>
+                    <p className="text-sm text-muted-foreground">{maskPhone(apt.client_phone)}</p>
                     <p className="text-sm text-muted-foreground mt-1">
                       {apt.service?.name} com {apt.barber?.name} • {apt.service?.price?.toFixed(0)} MT
                     </p>
