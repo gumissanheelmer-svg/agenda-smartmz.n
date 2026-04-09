@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
-import { MessageCircle } from 'lucide-react';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
 
 import { HeroSection } from '@/components/landing/HeroSection';
@@ -17,6 +16,7 @@ import { FinalCTA } from '@/components/landing/FinalCTA';
 import { WhatsAppFAB } from '@/components/landing/WhatsAppFAB';
 import { useReferral } from '@/hooks/useReferral';
 import { useLandingSettings } from '@/hooks/useLandingSettings';
+import { useI18n, LanguageToggle } from '@/lib/i18n';
 
 const DEFAULT_WA_MESSAGE = `Olá! Quero que vocês configurem o meu negócio no Agenda Smart.
 
@@ -28,6 +28,7 @@ Meu WhatsApp:`;
 export default function BarbershopList() {
   useReferral();
   const { settings } = useLandingSettings();
+  const { t } = useI18n();
 
   const waPhone = settings.wa_sales_phone;
   const waMessage = settings.wa_sales_message_template || DEFAULT_WA_MESSAGE;
@@ -36,8 +37,8 @@ export default function BarbershopList() {
   return (
     <div className="min-h-screen bg-background overflow-hidden relative">
       <Helmet>
-        <title>Agenda Smart - Sistema de Agendamento para Barbearias e Salões</title>
-        <meta name="description" content="Sistema completo de agendamento online para barbearias, salões de beleza e muito mais. Gerencie seus clientes e equipe de forma simples." />
+        <title>{t('seo.title')}</title>
+        <meta name="description" content={t('seo.description')} />
       </Helmet>
 
       {/* Noise overlay */}
@@ -58,21 +59,22 @@ export default function BarbershopList() {
       >
         <Logo size="sm" />
         <div className="flex items-center gap-2 sm:gap-3">
+          <LanguageToggle />
           <Link to="/login">
             <Button variant="ghost" size="sm" className="rounded-full border border-white/20 text-white/80 hover:bg-white/5 hover:text-white bg-transparent px-4 sm:px-5 h-9 text-sm transition-all duration-300">
-              Acessar
+              {t('header.login')}
             </Button>
           </Link>
           {waEnabled ? (
             <a href={buildWhatsAppLink(waPhone!, waMessage)} target="_blank" rel="noopener noreferrer">
               <Button size="sm" className="rounded-full bg-gradient-to-br from-[hsl(43,74%,49%)] to-[hsl(35,80%,45%)] text-[hsl(20,14%,4%)] hover:opacity-90 shadow-[0_4px_24px_-4px_hsl(43_74%_49%_/_0.3)] hover:shadow-lg px-4 sm:px-5 h-9 text-sm font-semibold transition-all duration-300">
-                Adquirir
+                {t('header.buy')}
               </Button>
             </a>
           ) : (
             <Link to="/register">
               <Button size="sm" className="rounded-full bg-gradient-to-br from-[hsl(43,74%,49%)] to-[hsl(35,80%,45%)] text-[hsl(20,14%,4%)] hover:opacity-90 shadow-[0_4px_24px_-4px_hsl(43_74%_49%_/_0.3)] hover:shadow-lg px-4 sm:px-5 h-9 text-sm font-semibold transition-all duration-300">
-                Adquirir
+                {t('header.buy')}
               </Button>
             </Link>
           )}
@@ -102,7 +104,7 @@ export default function BarbershopList() {
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        <p>© {new Date().getFullYear()} Agenda Smart. Todos os direitos reservados.</p>
+        <p>© {new Date().getFullYear()} Agenda Smart. {t('footer.rights')}</p>
       </motion.footer>
     </div>
   );
