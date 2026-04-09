@@ -25,6 +25,22 @@ const BEHAVIOR_THRESHOLDS: Record<string, { maxEvents: number; windowMinutes: nu
   default:          { maxEvents: 20, windowMinutes: 5,  cooldownSeconds: 60  },
 }
 
+// ── Attack pattern detection ──
+const ATTACK_PATTERNS = [
+  { name: 'sql_injection', pattern: /(union\s+select|;\s*drop|'\s*or\s*'|--\s*$)/i },
+  { name: 'xss', pattern: /(<script|javascript:|on(load|error|click)\s*=)/i },
+  { name: 'path_traversal', pattern: /(\.\.\/(\.\.)?|%2e%2e)/i },
+  { name: 'command_injection', pattern: /(\||;|\$\(|`.*`)/i },
+]
+
+function detectAttackInMetadata(metadata: Record<string, unknown>): string | null {
+  const str = JSON.stringify(metadata)
+  for (const { name, pattern } of ATTACK_PATTERNS) {
+    if (pattern.test(str)) return name
+  }
+  return null
+}
+
 function getThreshold(eventType: string) {
   return BEHAVIOR_THRESHOLDS[eventType] || BEHAVIOR_THRESHOLDS.default
 }
@@ -208,9 +224,31 @@ Deno.serve(async (req) => {
 
     // ══════════════════════════════════════════════
     // ACTION: "log" (default) — Log a security event
+    // Also detects attack patterns in metadata
     // ══════════════════════════════════════════════
     if (!event_type) {
       return jsonResponse({ error: 'event_type is required' }, 400)
+    }
+
+    // Detect attack patterns in metadata silently
+    if (metadata && typeof metadata === 'object') {
+      const attackType = detectAttackInMetadata(metadata as Record<string, unknown>)
+      if (attackType) {
+        // Silently escalate — log as attack but return normal response
+        await supabaseAdmin.from('security_events').insert({
+          event_type: 'attack_detected',
+          email: email?.toLowerCase().trim() || null,
+          ip_address,
+          metadata: {
+            original_event: event_type,
+            attack_type: attackType,
+            auto_detected: true,
+            ...(metadata || {}),
+          },
+        })
+        // Return normal success — never reveal detection
+        return jsonResponse({ success: true })
+      }
     }
 
     const normalizedEmail = email?.toLowerCase().trim() || null
