@@ -111,6 +111,7 @@ const App = () => (
                 </Routes>
               </BrowserRouter>
             </TooltipProvider>
+            </I18nProvider>
           </DynamicThemeProvider>
         </BarbershopProvider>
       </AuthProvider>
