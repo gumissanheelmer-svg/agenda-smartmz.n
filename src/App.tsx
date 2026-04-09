@@ -44,6 +44,7 @@ const App = () => (
       <AuthProvider>
         <BarbershopProvider>
           <DynamicThemeProvider>
+            <I18nProvider>
             <TooltipProvider>
               <Toaster />
               <Sonner />
