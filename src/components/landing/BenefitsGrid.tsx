@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Clock, CheckCircle, Users, Tag, BarChart3, Link2 } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -17,16 +18,18 @@ const cardReveal = {
   }
 };
 
-const benefits = [
-  { icon: Clock, title: 'Agendamento 24h', desc: 'Clientes agendam a qualquer hora, mesmo quando você não está.' },
-  { icon: CheckCircle, title: 'Confirmação automática', desc: 'Cada agendamento é confirmado na hora, sem esforço manual.' },
-  { icon: Users, title: 'Gestão de equipa', desc: 'Cadastre profissionais e distribua a agenda automaticamente.' },
-  { icon: Tag, title: 'Serviços e preços', desc: 'Configure serviços, duração e preços do seu jeito.' },
-  { icon: BarChart3, title: 'Relatórios simples', desc: 'Veja o desempenho do negócio com dados claros e diretos.' },
-  { icon: Link2, title: 'Link na bio pronto', desc: 'Compartilhe seu link de agendamento nas redes sociais.' },
-];
-
 export function BenefitsGrid() {
+  const { t } = useI18n();
+
+  const benefits = [
+    { icon: Clock, title: t('benefits.scheduling'), desc: t('benefits.scheduling_desc') },
+    { icon: CheckCircle, title: t('benefits.confirmation'), desc: t('benefits.confirmation_desc') },
+    { icon: Users, title: t('benefits.team'), desc: t('benefits.team_desc') },
+    { icon: Tag, title: t('benefits.services'), desc: t('benefits.services_desc') },
+    { icon: BarChart3, title: t('benefits.reports'), desc: t('benefits.reports_desc') },
+    { icon: Link2, title: t('benefits.link'), desc: t('benefits.link_desc') },
+  ];
+
   return (
     <section className="py-24 px-6">
       <div className="max-w-6xl mx-auto">
@@ -37,12 +40,12 @@ export function BenefitsGrid() {
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
         >
-          <span className="text-xs font-medium text-primary tracking-widest uppercase mb-3 block">Funcionalidades</span>
+          <span className="text-xs font-medium text-primary tracking-widest uppercase mb-3 block">{t('benefits.label')}</span>
           <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground tracking-tight">
-            Tudo que você precisa
+            {t('benefits.title')}
           </h2>
           <p className="mt-4 text-muted-foreground text-lg max-w-lg mx-auto">
-            Ferramentas poderosas para automatizar e escalar seu negócio.
+            {t('benefits.subtitle')}
           </p>
         </motion.div>
 
