@@ -522,6 +522,7 @@ export type Database = {
           payment_methods: Json | null
           payment_methods_enabled: string[] | null
           payment_required: boolean
+          plan_id: string | null
           prep_buffer_minutes: number
           primary_color: string
           print_with_logo: boolean
@@ -573,6 +574,7 @@ export type Database = {
           payment_methods?: Json | null
           payment_methods_enabled?: string[] | null
           payment_required?: boolean
+          plan_id?: string | null
           prep_buffer_minutes?: number
           primary_color?: string
           print_with_logo?: boolean
@@ -624,6 +626,7 @@ export type Database = {
           payment_methods?: Json | null
           payment_methods_enabled?: string[] | null
           payment_required?: boolean
+          plan_id?: string | null
           prep_buffer_minutes?: number
           primary_color?: string
           print_with_logo?: boolean
@@ -636,7 +639,15 @@ export type Database = {
           video_url?: string | null
           whatsapp_number?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "barbershops_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       business_templates: {
         Row: {
@@ -984,6 +995,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      plans: {
+        Row: {
+          active: boolean
+          badge: string | null
+          country_code: string
+          created_at: string
+          currency: string
+          features: Json
+          id: string
+          is_default: boolean
+          key: string
+          max_professionals: number
+          name: string
+          price: number
+          updated_at: string
+          yearly_price: number
+        }
+        Insert: {
+          active?: boolean
+          badge?: string | null
+          country_code?: string
+          created_at?: string
+          currency?: string
+          features?: Json
+          id?: string
+          is_default?: boolean
+          key: string
+          max_professionals?: number
+          name: string
+          price?: number
+          updated_at?: string
+          yearly_price?: number
+        }
+        Update: {
+          active?: boolean
+          badge?: string | null
+          country_code?: string
+          created_at?: string
+          currency?: string
+          features?: Json
+          id?: string
+          is_default?: boolean
+          key?: string
+          max_professionals?: number
+          name?: string
+          price?: number
+          updated_at?: string
+          yearly_price?: number
+        }
+        Relationships: []
       }
       professional_attendance: {
         Row: {
@@ -1643,6 +1705,10 @@ export type Database = {
       can_view_client_data: {
         Args: { p_appointment_id: string }
         Returns: boolean
+      }
+      check_professional_limit: {
+        Args: { p_barbershop_id: string }
+        Returns: Json
       }
       create_barbershop: {
         Args: {

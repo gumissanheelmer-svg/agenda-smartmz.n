@@ -131,6 +131,20 @@ export default function BarbersList() {
         fetchBarbers();
       }
     } else {
+      // Check professional limit before creating
+      const { data: limitData } = await supabase.rpc('check_professional_limit', { p_barbershop_id: barbershopId });
+      if (limitData && typeof limitData === 'object' && 'allowed' in (limitData as Record<string, unknown>)) {
+        const limit = limitData as { allowed: boolean; current: number; max: number; plan_name: string };
+        if (!limit.allowed) {
+          toast({
+            title: 'Limite do plano atingido',
+            description: `O plano ${limit.plan_name} permite até ${limit.max} profissional(is). Atualize seu plano para adicionar mais.`,
+            variant: 'destructive',
+          });
+          return;
+        }
+      }
+
       const { error } = await supabase
         .from('barbers')
         .insert({ ...barberData, barbershop_id: barbershopId });
