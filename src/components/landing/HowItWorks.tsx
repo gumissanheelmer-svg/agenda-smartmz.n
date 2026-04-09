@@ -1,23 +1,26 @@
 import { motion } from 'framer-motion';
-
-const steps = [
-  { num: '01', title: 'Crie seu negócio', desc: 'Cadastre-se gratuitamente e configure seu espaço em minutos.' },
-  { num: '02', title: 'Configure serviços e horários', desc: 'Adicione serviços, preços, duração e horários da equipa.' },
-  { num: '03', title: 'Publique seu link de agendamento', desc: 'Compartilhe nas redes sociais, WhatsApp e onde quiser.' },
-  { num: '04', title: 'Receba clientes automaticamente', desc: 'Seus clientes agendam sozinhos, 24h por dia, 7 dias por semana.' },
-];
-
-const stagger = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
-};
-
-const itemReveal = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' as const } }
-};
+import { useI18n } from '@/lib/i18n';
 
 export function HowItWorks() {
+  const { t } = useI18n();
+
+  const steps = [
+    { num: '01', title: t('how.step1_title'), desc: t('how.step1_desc') },
+    { num: '02', title: t('how.step2_title'), desc: t('how.step2_desc') },
+    { num: '03', title: t('how.step3_title'), desc: t('how.step3_desc') },
+    { num: '04', title: t('how.step4_title'), desc: t('how.step4_desc') },
+  ];
+
+  const stagger = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
+  };
+
+  const itemReveal = {
+    hidden: { opacity: 0, y: 40 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' as const } }
+  };
+
   return (
     <section className="py-24 px-6">
       <div className="max-w-5xl mx-auto">
@@ -28,9 +31,9 @@ export function HowItWorks() {
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
         >
-          <span className="text-xs font-medium text-primary tracking-widest uppercase mb-3 block">Passo a passo</span>
+          <span className="text-xs font-medium text-primary tracking-widest uppercase mb-3 block">{t('how.label')}</span>
           <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground tracking-tight">
-            Como funciona
+            {t('how.title')}
           </h2>
         </motion.div>
 

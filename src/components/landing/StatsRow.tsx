@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { motion, useInView, useMotionValue, useTransform, animate } from 'framer-motion';
 import { Users, Calendar, BarChart3 } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -61,6 +62,8 @@ function StatCard({ icon: Icon, value, label }: {
 }
 
 export function StatsRow() {
+  const { t } = useI18n();
+
   return (
     <section className="px-6 -mt-8 mb-16">
       <motion.div
@@ -70,9 +73,9 @@ export function StatsRow() {
         whileInView="visible"
         viewport={{ once: true, margin: '-50px' }}
       >
-        <StatCard icon={Users} value="500+" label="Negócios ativos" />
-        <StatCard icon={Calendar} value="12k+" label="Agendamentos/mês" />
-        <StatCard icon={BarChart3} value="99.9%" label="Uptime garantido" />
+        <StatCard icon={Users} value="500+" label={t('stats.businesses')} />
+        <StatCard icon={Calendar} value="12k+" label={t('stats.bookings')} />
+        <StatCard icon={BarChart3} value="99.9%" label={t('stats.uptime')} />
       </motion.div>
     </section>
   );

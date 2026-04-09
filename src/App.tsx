@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { BarbershopProvider } from "@/hooks/useBarbershop";
 import { DynamicThemeProvider } from "@/components/DynamicThemeProvider";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { I18nProvider } from "@/lib/i18n";
 import BarbershopList from "./pages/BarbershopList";
 import AngolaLanding from "./pages/AngolaLanding";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
@@ -43,6 +44,7 @@ const App = () => (
       <AuthProvider>
         <BarbershopProvider>
           <DynamicThemeProvider>
+            <I18nProvider>
             <TooltipProvider>
               <Toaster />
               <Sonner />
@@ -109,6 +111,7 @@ const App = () => (
                 </Routes>
               </BrowserRouter>
             </TooltipProvider>
+            </I18nProvider>
           </DynamicThemeProvider>
         </BarbershopProvider>
       </AuthProvider>

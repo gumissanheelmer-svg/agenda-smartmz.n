@@ -5,17 +5,20 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-
-const faqs = [
-  { q: 'Preciso de site?', a: 'Não! O Agenda Smart gera automaticamente uma página de agendamento para o seu negócio. Basta partilhar o link.' },
-  { q: 'Funciona no WhatsApp?', a: 'Sim. Pode enviar o link de agendamento directamente pelo WhatsApp aos seus clientes.' },
-  { q: 'Meus clientes conseguem agendar pelo telemóvel?', a: 'Sim, a plataforma é 100% responsiva. Funciona perfeitamente em qualquer dispositivo.' },
-  { q: 'Posso editar horários?', a: 'Claro! Pode configurar horários de trabalho, pausas e folgas para cada profissional individualmente.' },
-  { q: 'Como partilho o link?', a: 'Nas definições do seu negócio você encontra o link direto. Copie e cole em qualquer rede social, bio do Instagram, etc.' },
-  { q: 'Tem suporte?', a: 'Sim! Oferecemos suporte por chat e email. Utilizadores Pro têm suporte prioritário.' },
-];
+import { useI18n } from '@/lib/i18n';
 
 export function FAQSection() {
+  const { t } = useI18n();
+
+  const faqs = [
+    { q: t('faq.q1'), a: t('faq.a1') },
+    { q: t('faq.q2'), a: t('faq.a2') },
+    { q: t('faq.q3'), a: t('faq.a3') },
+    { q: t('faq.q4'), a: t('faq.a4') },
+    { q: t('faq.q5'), a: t('faq.a5') },
+    { q: t('faq.q6'), a: t('faq.a6') },
+  ];
+
   return (
     <section className="py-24 px-6">
       <div className="max-w-3xl mx-auto">
@@ -26,9 +29,9 @@ export function FAQSection() {
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
         >
-          <span className="text-xs font-medium text-primary tracking-widest uppercase mb-3 block">Dúvidas</span>
+          <span className="text-xs font-medium text-primary tracking-widest uppercase mb-3 block">{t('faq.label')}</span>
           <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground tracking-tight">
-            Perguntas frequentes
+            {t('faq.title')}
           </h2>
         </motion.div>
 

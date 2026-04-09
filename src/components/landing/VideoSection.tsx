@@ -1,14 +1,13 @@
 import { motion } from 'framer-motion';
-import { Video } from 'lucide-react';
 import { useLandingSettings } from '@/hooks/useLandingSettings';
+import { useI18n } from '@/lib/i18n';
 
 export function VideoSection() {
   const { settings, isLoading } = useLandingSettings();
+  const { t } = useI18n();
 
   if (isLoading) return null;
   if (!settings.vsl_enabled) return null;
-
-  // No embed URL and not an admin preview — hide completely
   if (!settings.vsl_embed_url) return null;
 
   return (
@@ -21,7 +20,7 @@ export function VideoSection() {
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6 }}
         >
-          <span className="text-xs font-medium text-primary tracking-widest uppercase mb-3 block">Demonstração</span>
+          <span className="text-xs font-medium text-primary tracking-widest uppercase mb-3 block">{t('video.label')}</span>
           <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground tracking-tight">
             {settings.vsl_title}
           </h2>
