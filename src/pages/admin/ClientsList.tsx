@@ -9,7 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 interface Client {
   client_name: string;
-  client_phone: string;
+  client_phone_masked: string;
   appointment_count: number;
   last_appointment: string;
 }
@@ -31,10 +31,7 @@ export default function ClientsList() {
     
     setIsLoading(true);
     const { data, error } = await supabase
-      .from('appointments')
-      .select('client_name, client_phone, appointment_date')
-      .eq('barbershop_id', barbershopId)
-      .order('appointment_date', { ascending: false });
+      .rpc('get_clients_for_barbershop', { p_barbershop_id: barbershopId });
 
     if (error) {
       console.error('Error fetching clients:', error);
@@ -42,29 +39,18 @@ export default function ClientsList() {
       return;
     }
 
-    // Group by phone number
-    const clientMap = new Map<string, Client>();
-    data?.forEach((apt) => {
-      const existing = clientMap.get(apt.client_phone);
-      if (existing) {
-        existing.appointment_count++;
-      } else {
-        clientMap.set(apt.client_phone, {
-          client_name: apt.client_name,
-          client_phone: apt.client_phone,
-          appointment_count: 1,
-          last_appointment: apt.appointment_date,
-        });
-      }
-    });
-
-    setClients(Array.from(clientMap.values()));
+    setClients((data || []).map((d: any) => ({
+      client_name: d.client_name,
+      client_phone_masked: d.client_phone_masked,
+      appointment_count: Number(d.appointment_count),
+      last_appointment: d.last_appointment,
+    })));
     setIsLoading(false);
   };
 
   const filteredClients = clients.filter((client) =>
     client.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.client_phone.includes(searchTerm)
+    client.client_phone_masked.includes(searchTerm)
   );
 
   return (
@@ -79,7 +65,7 @@ export default function ClientsList() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Buscar por nome ou telefone..."
+              placeholder="Buscar por nome..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 bg-input border-border"
@@ -119,7 +105,7 @@ export default function ClientsList() {
                       <p className="font-medium text-foreground">{client.client_name}</p>
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
                         <Phone className="w-3 h-3" />
-                        {client.client_phone}
+                        {client.client_phone_masked}
                       </p>
                     </div>
                   </div>
