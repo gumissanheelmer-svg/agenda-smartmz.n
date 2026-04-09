@@ -18,6 +18,8 @@ import { PaymentStep } from '@/components/booking/PaymentStep';
 import { PaymentMethod } from '@/lib/paymentCodeExtractor';
 import { generateBusinessTimeSlots, isBusinessHoursConfigured, filterAvailableSlots } from '@/lib/timeSlotUtils';
 import { checkAction, recordAction, BOOKING_THROTTLE } from '@/lib/behaviorGuard';
+import { scanFormInputs, logThreatSilently } from '@/lib/securityMiddleware';
+import { getSafeErrorMessage, reportSecurityError } from '@/lib/errorHandler';
 
 interface BookingFormProps {
   onBack: () => void;
@@ -307,6 +309,21 @@ export function BookingForm({ onBack, barbershopId, backgroundImageUrl, backgrou
     }
 
     // Anti-spam: check booking throttle
+    // 0. Scan inputs for attack patterns
+    const threat = scanFormInputs({
+      clientName: formData.clientName,
+      clientPhone: formData.clientPhone,
+    });
+    if (threat.threat !== 'none') {
+      logThreatSilently(threat.threat, 'booking_form', { field: threat.field });
+      toast({
+        title: 'Dados inválidos',
+        description: 'Por favor, verifique os dados informados.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     const guard = checkAction(BOOKING_THROTTLE);
     if (!guard.allowed) {
       toast({
@@ -334,11 +351,11 @@ export function BookingForm({ onBack, barbershopId, backgroundImageUrl, backgrou
       });
 
       if (error) {
-        console.error('Booking RPC error:', error);
+        reportSecurityError('booking_rpc', error);
         setBookingError('Não foi possível realizar o agendamento. Tente novamente.');
         toast({
           title: 'Erro ao agendar',
-          description: 'Não foi possível realizar o agendamento. Tente novamente.',
+          description: getSafeErrorMessage(error, 'Não foi possível realizar o agendamento. Tente novamente.'),
           variant: 'destructive',
         });
         return;
